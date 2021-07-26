@@ -5,15 +5,24 @@
 Support R23 or higher
 
 # Installation
+
 Open Git Bash 
+
 Change the current working directory to the [PRISMROOT]\Plugins\Apps\Cinema\
+
 Type "git clone https://github.com/kapellan2000/Cinema
+
 Press Enter. Your local clone will be created
 
 
-right click on system tray (Prism) icon and exit
 
-![image](https://user-images.githubusercontent.com/21256398/127023931-280da989-ad8a-4d8d-ab55-78546d6d39c0.png) start Prism Tray
+1. right click on system tray (Prism) icon and exit
+
+2.start Prism Tray
+
+![image](https://user-images.githubusercontent.com/21256398/127023931-280da989-ad8a-4d8d-ab55-78546d6d39c0.png) 
+
+3right click on system tray (Prism) icon and open Prism settings
 
 ![image](https://user-images.githubusercontent.com/21256398/127023038-fe297426-291d-4589-9652-ddd9dc69b2ff.png)
 
