@@ -51,13 +51,13 @@ Press Enter.
 
 ![prismSaveComment](https://user-images.githubusercontent.com/21256398/127019385-4d874611-bac4-472b-ae6f-334be19ef802.png) - (SaveComment) Complite
 
-![prismBrowser](https://user-images.githubusercontent.com/21256398/127019482-acca18b7-4d74-4cde-a922-23966ccf6be1.png) - (Browser) The part with the render was not developed
+![prismBrowser](https://user-images.githubusercontent.com/21256398/127019482-acca18b7-4d74-4cde-a922-23966ccf6be1.png) - (Browser) The part with the render will be developed soon
 
 ![prismBrowser](https://user-images.githubusercontent.com/21256398/127020465-a7e40fd3-98bc-45b4-b8a9-4ec5a2177977.png) - (States) In development, some flaws
 
 ![prismSettings](https://user-images.githubusercontent.com/21256398/127020187-d442100e-6406-4ce1-abc8-a40a39d98ab1.png) - (Settings) Complite
 
-Palette integration - not developed
+Palette integration - will be developed soon
 
 
 # prism-pipeline -https://prism-pipeline.com/
