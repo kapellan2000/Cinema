@@ -18,11 +18,11 @@ Press Enter. Your local clone will be created
 
 1. right click on system tray (Prism) icon and exit
 
-2.start Prism Tray
+2. start Prism Tray
 
 ![image](https://user-images.githubusercontent.com/21256398/127023931-280da989-ad8a-4d8d-ab55-78546d6d39c0.png) 
 
-3right click on system tray (Prism) icon and open Prism settings
+3. right click on system tray (Prism) icon and open Prism settings
 
 ![image](https://user-images.githubusercontent.com/21256398/127023038-fe297426-291d-4589-9652-ddd9dc69b2ff.png)
 
