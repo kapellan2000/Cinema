@@ -26,7 +26,11 @@ Press Enter. Your local clone will be created
 
 ![image](https://user-images.githubusercontent.com/21256398/127023038-fe297426-291d-4589-9652-ddd9dc69b2ff.png)
 
+4. Go to Cinema DCC app, and press Add
+
 ![image](https://user-images.githubusercontent.com/21256398/127022958-99f6f941-9cba-4a47-8711-474d4c8cbbde.png)
+
+5. Select folder like ~ Maxon Cinema 4D R23_DBA5903C
 
 ![image](https://user-images.githubusercontent.com/21256398/127023367-04cdc5b4-0505-4f51-bc79-93bcf27c8874.png)
 
