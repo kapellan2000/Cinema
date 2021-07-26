@@ -14,7 +14,7 @@ Change the current working directory to the [PRISMROOT]\Plugins\Apps\Cinema\
 
 Type "git clone https://github.com/kapellan2000/Cinema
 
-Press Enter. Your local clone will be created
+Press Enter.
 
 
 
