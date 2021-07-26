@@ -39,7 +39,7 @@ Press Enter. Your local clone will be created
 
 ![image](https://user-images.githubusercontent.com/21256398/127025240-dcf2c040-4a39-4ba6-b57e-ceef1be0c0c6.png)
 
-7. Optional  (Add Palette). drop prism.l4d to Cinema viewport, from [PRISMROOT]\Plugins\Apps\Cinema\Integration 
+7. Optional  (Add Palette). drop prism.l4d from [PRISMROOT]\Plugins\Apps\Cinema\Integration to Cinema viewport.
 
 
 
