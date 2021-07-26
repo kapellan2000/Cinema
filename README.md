@@ -6,6 +6,8 @@ Support R23 or higher
 
 # Installation
 
+Create "Cinema" dirrectory in  [PRISMROOT]\Plugins\Apps\
+
 Open Git Bash 
 
 Change the current working directory to the [PRISMROOT]\Plugins\Apps\Cinema\
