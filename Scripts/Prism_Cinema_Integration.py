@@ -97,7 +97,7 @@ class Prism_Cinema_Integration(object):
             
             if int(installPath.split("4D R")[1].split("_")[0])<23:
                 QMessageBox.warning(self.core.messageParent, "Prism Integration", "Unsupported version. Use Cinema R23 or higher")
-                break "Unsupported version. Use Cinema R23 or higher"
+                return ""
             
             initpath = os.path.join(installPath, "plugins/prism", "pythonrc.pyp")
 
