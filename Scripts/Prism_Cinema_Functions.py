@@ -94,9 +94,8 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sceneOpen(self, origin):
-        print(origin)
+        pass
         #if hasattr(origin, "asThread") and origin.asThread.isRunning():
-        #    print("^^^")
         #    origin.startasThread()
         #origin.sceneUnload()
         #self.updateEnvironment()
@@ -370,8 +369,6 @@ class Prism_Cinema_Functions(object):
     @err_catcher(name=__name__)
     def getCamName(self, origin, handle):
 
-        print(origin)
-        print(handle)
         if handle == "Current View":
             doc = documents.GetActiveDocument()
             selectedCamera = doc.GetActiveBaseDraw().GetSceneCamera(doc)
@@ -740,17 +737,14 @@ class Prism_Cinema_Functions(object):
             msg.addButton("Import", QMessageBox.NoRole)#1
             msg.setParent(self.core.messageParent, Qt.Window)
             action = msg.exec_()
-        print(action,"action---------------")
+
 
 
         if importOnly:
             #origin.preDelete(
             #    baseText="Do you want to delete the currently connected objects?\n\n"
             #)
-            print("------------")
-            print(fileName[1])
-            print(impFileName)
-            print("------------")
+
             if update==False and action == 1:
                 #if fileName[1] == ".fbx":
                 #    mel.eval("FBXImportMode -v merge")
@@ -923,7 +917,6 @@ class Prism_Cinema_Functions(object):
             bc[c4d.DESC_NAME] = "Prism" # Rename the entry
 
             element = obj.AddUserData(bc) # Add userdata container
-            print("----------------=================",element)
             obj[element] = str(namespace) # Assign a value
             c4d.EventAdd() # Update
 

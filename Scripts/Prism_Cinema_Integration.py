@@ -54,7 +54,7 @@ class Prism_Cinema_Integration(object):
 
         if platform.system() == "Windows":
             self.examplePath = (
-                os.environ["appdata"] + "\\Maxon\\Maxon Cinema 4D R23_DBA5903C\\"
+                os.environ["appdata"] + "\\Maxon\\"
             )
         elif platform.system() == "Linux":
             userName = (
@@ -95,7 +95,7 @@ class Prism_Cinema_Integration(object):
             )
             addedFiles = []
 
-            initpath = os.path.join(installPath, "plugins/prism", "PrismInit.pyp")
+            initpath = os.path.join(installPath, "plugins/prism", "pythonrc.pyp")
 
             if os.path.exists(initpath):
                 os.remove(initpath)
@@ -105,7 +105,7 @@ class Prism_Cinema_Integration(object):
             if not os.path.exists(pl_path):
                 os.makedirs(pl_path)
                 
-            origInitFile = os.path.join(integrationBase, "PrismInit.pyp")
+            origInitFile = os.path.join(integrationBase, "pythonrc.pyp")
 
             shutil.copy2(origInitFile, initpath)
             addedFiles.append(initpath)
