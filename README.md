@@ -55,9 +55,17 @@ Press Enter.
 
 ![prismBrowser](https://user-images.githubusercontent.com/21256398/127020465-a7e40fd3-98bc-45b4-b8a9-4ec5a2177977.png) - (States) In development, some flaws
 
+c4d - (export whole scene only)
+abc - (only separate frame animation)
+obj - (+)
+fbx - (+)
+ShotCam - (-)
+
+
 ![prismSettings](https://user-images.githubusercontent.com/21256398/127020187-d442100e-6406-4ce1-abc8-a40a39d98ab1.png) - (Settings) Complite
 
 Palette integration - will be developed soon
+
 
 
 # prism-pipeline -https://prism-pipeline.com/
