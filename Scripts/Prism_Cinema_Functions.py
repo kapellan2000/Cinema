@@ -472,9 +472,15 @@ class Prism_Cinema_Functions(object):
 
 
         myObject = doc.SearchObject("Cube")#select
-        objList = doc.GetSelection()
 
-        setupFolder="E:/Untitl_objExport/Untitled 1_objExport/"#folde
+        if origin.chb_wholeScene.isChecked():
+            objList, obj = self.get_all_objects(doc.GetFirstObject(), lambda x: x, [])
+            print(objList)
+            print(obj)
+        else:
+            objList = doc.GetSelection()
+
+        #setupFolder="E:/Untitl_objExport/Untitled 1_objExport/"#folde
 
 
 
@@ -482,8 +488,8 @@ class Prism_Cinema_Functions(object):
             # create folder, if not present
             
 
-            if not os.path.exists(setupFolder):
-                os.makedirs(setupFolder)
+            #if not os.path.exists(setupFolder):
+             #   os.makedirs(setupFolder)
 
             fileFormatEnding = fileFormatDict[chosenExportMethod][0]
             cmdNr = fileFormatDict[chosenExportMethod][1]
@@ -492,7 +498,7 @@ class Prism_Cinema_Functions(object):
             for obj in objList:
                 # check type
                 if isinstance(obj, c4d.BaseObject):
-                    if expType == ".obj":
+                    if expType == ".obj" or expType == ".fbx":
 
                         for i in range(startFrame, endFrame + 1):
                             tmpList.insert(0, obj)
@@ -507,12 +513,9 @@ class Prism_Cinema_Functions(object):
 
                             foutputName = outputName.replace("####", format(i, "04")).replace("\\","/")
                             # steal active rendersettings (incl. children) & set them active in saved doc
-                            if fileFormatEnding == ".c4d":
-                                myRendersettings = doc.GetActiveRenderData().GetClone()
-                                theTempDoc.InsertRenderData(myRendersettings)
-                                myRendersettings.SetBit(c4d.BIT_ACTIVERENDERDATA)
+
                             # save temp doc in folder using the original project-filename & objectname
-                            path = str(setupFolder + obj.GetName() + str(fileFormatEnding))
+                            #path = str(setupFolder + obj.GetName() + str(fileFormatEnding))
 
                             documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
                             # some list-stuff
@@ -521,7 +524,22 @@ class Prism_Cinema_Functions(object):
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
                             
+            if expType == ".c4d":
+                if origin.chb_wholeScene.isChecked():
 
+                    foutputName = outputName.replace("\\","/")
+                    #myRendersettings = doc.GetActiveRenderData().GetClone()
+                    #theTempDoc.InsertRenderData(myRendersettings)
+                    #myRendersettings.SetBit(c4d.BIT_ACTIVERENDERDATA)
+                    #documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
+                    
+                    # save scenefile
+                    doc = documents.GetActiveDocument()
+                    #doc.SetDocumentPath(filepath.replace(filepath.split("/")[-1],""))
+                    #doc.SetDocumentName(filepath.split("/")[-1])
+                    
+                    documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
+                    outputName = foutputName
 
 
 
