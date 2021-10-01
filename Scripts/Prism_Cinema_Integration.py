@@ -108,7 +108,15 @@ class Prism_Cinema_Integration(object):
 
             if not os.path.exists(pl_path):
                 os.makedirs(pl_path)
-                
+
+            l_path = os.path.join(installPath, "library", "layout")
+
+            if not os.path.exists(l_path):
+                os.makedirs(l_path)
+
+            origLFile = os.path.join(integrationBase, "prism.l4d")
+            shutil.copy2(origLFile, l_path)
+
             origInitFile = os.path.join(integrationBase, "pythonrc.pyp")
 
             shutil.copy2(origInitFile, initpath)
@@ -144,11 +152,6 @@ class Prism_Cinema_Integration(object):
 
                 shutil.copy2(iconPath, tPath)
                 addedFiles.append(tPath)
-
-
-
-
-
 
 
             if platform.system() in ["Linux", "Darwin"]:
