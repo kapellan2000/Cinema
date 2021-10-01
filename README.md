@@ -8,45 +8,9 @@ Support R23 or higher
 ![install](https://user-images.githubusercontent.com/21256398/135682316-e4f56de7-5941-4881-bb71-291ea0a477e1.gif)
 
 
-Create "Cinema" dirrectory in  [PRISMROOT]\Plugins\Apps\
+# Connect to Cinema
 
-Open Git Bash 
-
-Change the current working directory to the [PRISMROOT]\Plugins\Apps\Cinema\
-
-Type "git clone https://github.com/kapellan2000/Cinema
-
-Press Enter.
-
-
-
-1. right click on system tray (Prism) icon and exit
-
-2. start Prism Tray
-
-![image](https://user-images.githubusercontent.com/21256398/127023931-280da989-ad8a-4d8d-ab55-78546d6d39c0.png) 
-
-3. right click on system tray (Prism) icon and open Prism settings
-
-![image](https://user-images.githubusercontent.com/21256398/127023038-fe297426-291d-4589-9652-ddd9dc69b2ff.png)
-
-4. Go to Cinema DCC app, and press Add
-
-![image](https://user-images.githubusercontent.com/21256398/127022958-99f6f941-9cba-4a47-8711-474d4c8cbbde.png)
-
-5. Select folder like ~ Maxon Cinema 4D R23_DBA5903C
-
-![image](https://user-images.githubusercontent.com/21256398/127023367-04cdc5b4-0505-4f51-bc79-93bcf27c8874.png)
-
-
-6.Check result in Cinema
-
-![image](https://user-images.githubusercontent.com/21256398/127025240-dcf2c040-4a39-4ba6-b57e-ceef1be0c0c6.png)
-
-7. Optional  (Add Palette). drop prism.l4d from [PRISMROOT]\Plugins\Apps\Cinema\Integration to Cinema viewport.
-
-
-
+![add](https://user-images.githubusercontent.com/21256398/135682583-28b7f798-fe8e-4d99-bb09-5d6dfc643562.gif)
 
 
 # Status
