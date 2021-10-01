@@ -5,6 +5,8 @@
 Support R23 or higher
 
 # Installation
+![install](https://user-images.githubusercontent.com/21256398/135682316-e4f56de7-5941-4881-bb71-291ea0a477e1.gif)
+
 
 Create "Cinema" dirrectory in  [PRISMROOT]\Plugins\Apps\
 
@@ -42,6 +44,7 @@ Press Enter.
 ![image](https://user-images.githubusercontent.com/21256398/127025240-dcf2c040-4a39-4ba6-b57e-ceef1be0c0c6.png)
 
 7. Optional  (Add Palette). drop prism.l4d from [PRISMROOT]\Plugins\Apps\Cinema\Integration to Cinema viewport.
+
 
 
 
