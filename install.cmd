@@ -4,7 +4,7 @@ echo -----------------
 
 set /p Input=Input path to Prism root: 
 cd %~dp0
-rmdir %Input%"\Plugins\Apps\Cinema"
+rmdir /s %Input%"\Plugins\Apps\Cinema"
 mkdir %Input%"\Plugins\Apps\Cinema"
 del %Input%"\ProjectFiles\EmptyScenes\EmptyScene Cinema R23.c4d"
 
