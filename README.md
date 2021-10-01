@@ -69,7 +69,7 @@ ShotCam - (-)
 
 ![prismSettings](https://user-images.githubusercontent.com/21256398/127020187-d442100e-6406-4ce1-abc8-a40a39d98ab1.png) - (Settings) Complite
 
-Palette integration - will be developed soon
+
 
 
 
