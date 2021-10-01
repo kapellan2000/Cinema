@@ -150,9 +150,6 @@ class Prism_Cinema_Functions(object):
 
 
 
-
-
-
     @err_catcher(name=__name__)
     def executeScript(self, origin, code, execute=False, logErr=True):
         if logErr:
@@ -588,6 +585,7 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_startup(self, origin):
+        print("render")
         pass
 
     @err_catcher(name=__name__)
@@ -614,7 +612,70 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_startLocalRender(self, origin, outputName, rSettings):
-        pass
+
+        doc = documents.GetActiveDocument()
+
+        if rSettings["startFrame"] is None:
+            frameChunks = [[x, x] for x in rSettings["frames"]]
+        else:
+            frameChunks = [[rSettings["startFrame"], rSettings["endFrame"]]]
+
+        curRenderer = "octane"
+        if curRenderer == "octane":
+
+            rdata = doc.GetActiveRenderData()
+            rdata[c4d.RDATA_PATH] = outputName# rSettings["outputName"]
+            for frameChunk in frameChunks:
+                rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
+                rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
+                rdata[c4d.RDATA_FRAMESTEP] = 1
+                c4d.CallCommand(12099)
+
+        try:
+            curRenderer = "octane"
+            if curRenderer == "octane":
+                rdata = doc.GetActiveRenderData()
+                rdata[c4d.RDATA_PATH] = rSettings["outputName"]
+                for frameChunk in frameChunks:
+
+                    rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
+                    rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
+                    rdata[c4d.RDATA_FRAMESTEP] = 1
+                    c4d.CallCommand(12099)
+
+
+
+            tmpPath = os.path.join(os.path.dirname(rSettings["outputName"]), "tmp")
+            if os.path.exists(tmpPath):
+                try:
+                    shutil.rmtree(tmpPath)
+                except:
+                    pass
+
+            if (
+                os.path.exists(os.path.dirname(outputName))
+                and len(os.listdir(os.path.dirname(outputName))) > 0
+            ):
+                return "Result=Success"
+            else:
+                return "unknown error (files do not exist)"
+
+        except Exception as e:
+            exc_type, exc_obj, exc_tb = sys.exc_info()
+            erStr = "%s ERROR - sm_default_imageRender %s:\n%s" % (
+                time.strftime("%d/%m/%y %X"),
+                origin.core.version,
+                traceback.format_exc(),
+            )
+            self.core.writeErrorLog(erStr)
+            return "Execute Canceled: unknown error (view console for more information)"
+
+
+
+
+
+
+
 
     @err_catcher(name=__name__)
     def sm_render_undoRenderSettings(self, origin, rSettings):
@@ -808,7 +869,7 @@ class Prism_Cinema_Functions(object):
 
 
 
-            elif action == 0 or update==True or action == 16384:
+            elif action == 0 or update==True or action == 16384: 
                 
                 updateCache = True
                 importedNodes = []
@@ -829,7 +890,7 @@ class Prism_Cinema_Functions(object):
                             ind =1
                     #self.selectNodes(origin.nodes)
 
-                if action == 16384:
+                if action == 16384: # replace all
                     obj = doc.GetActiveObjectsFilter(True, type=1025766, instanceof=False)
                 else:
                     obj = doc.GetSelection()

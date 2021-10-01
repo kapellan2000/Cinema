@@ -42,7 +42,7 @@ class Prism_Cinema_Variables(object):
         self.sceneFormats = [".c4d"]
         self.appSpecificFormats = self.sceneFormats
         self.outputFormats = [".c4d",".abc", ".obj", ".fbx", "ShotCam"]
-        self.appColor = [255, 255, 255]
+        self.appColor = [133, 163, 204]
         self.appVersionPresets = ["1.0", "1.1"]
         self.renderPasses = []
         self.preferredUnit = "centimeter"
