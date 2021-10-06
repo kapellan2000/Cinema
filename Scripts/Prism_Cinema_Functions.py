@@ -45,7 +45,7 @@ except:
 from PrismUtils.Decorators import err_catcher as err_catcher
 
 import c4d
-from c4d import documents
+from c4d import documents, plugins
 
 
 
@@ -431,6 +431,7 @@ class Prism_Cinema_Functions(object):
         nodes=None,
         expType=None,
     ):
+
         if expType is None:
             expType = origin.getOutputType()
         if expType == ".c4d":
@@ -443,7 +444,6 @@ class Prism_Cinema_Functions(object):
             chosenExportMethod = 900009
         #elif expType == "ShotCam":
         #   chosenExportMethod = 900002
-
 
         # dict with menu id, formatending, command-code
         fileFormatDict = {900000: [".c4d", 1001026],
@@ -520,6 +520,38 @@ class Prism_Cinema_Functions(object):
                             # kill temp doc
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
+                    if expType == ".abc":
+                        # Get Alembic export plugin, 1028082 is its ID
+                        plug = plugins.FindPlugin(1028082, c4d.PLUGINTYPE_SCENESAVER)
+
+                        foutputName = outputName.replace("\\","/")
+
+                        op = {}
+                        # Send MSG_RETRIEVEPRIVATEDATA to Alembic export plugin
+                        if plug.Message(c4d.MSG_RETRIEVEPRIVATEDATA, op):
+
+
+                            # BaseList2D object stored in "imexporter" key hold the settings
+                            abcExport = op["imexporter"]
+
+
+                            # Change Alembic export settings
+                            abcExport[c4d.ABCEXPORT_FRAME_START] = startFrame
+                            abcExport[c4d.ABCEXPORT_FRAME_END] = endFrame
+                            abcExport[c4d.ABCEXPORT_FRAME_STEP] = 1
+                            abcExport[c4d.ABCEXPORT_SUBFRAMES] = 1
+
+                            abcExport[c4d.ABCEXPORT_SELECTION_ONLY] = True
+                            abcExport[c4d.ABCEXPORT_PARTICLES] = True
+                            abcExport[c4d.ABCEXPORT_PARTICLE_GEOMETRY] = True
+
+                            # Finally export the document
+                            if documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, 1028082):
+                                print(foutputName)
+                            else:
+                                print ("Export failed!")
+                            outputName = foutputName
+                        
                             
             if expType == ".c4d":
                 if origin.chb_wholeScene.isChecked():
