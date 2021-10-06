@@ -646,52 +646,54 @@ class Prism_Cinema_Functions(object):
     def sm_render_startLocalRender(self, origin, outputName, rSettings):
 
         doc = documents.GetActiveDocument()
-
+        print(outputName)
+        print(rSettings)
         if rSettings["startFrame"] is None:
             frameChunks = [[x, x] for x in rSettings["frames"]]
         else:
             frameChunks = [[rSettings["startFrame"], rSettings["endFrame"]]]
 
         curRenderer = "octane"
-        if curRenderer == "octane":
+        #if curRenderer == "octane":
 
-            rdata = doc.GetActiveRenderData()
-            rdata[c4d.RDATA_PATH] = outputName# rSettings["outputName"]
-            for frameChunk in frameChunks:
-                rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
-                rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
-                rdata[c4d.RDATA_FRAMESTEP] = 1
-                c4d.CallCommand(12099)
+        #    rdata = doc.GetActiveRenderData()
+        #    rdata[c4d.RDATA_PATH] = outputName# rSettings["outputName"]
+        #    for frameChunk in frameChunks:
+        #        rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
+        #        rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
+        #        rdata[c4d.RDATA_FRAMESTEP] = 1
+        #        c4d.CallCommand(12099)
 
         try:
             curRenderer = "octane"
             if curRenderer == "octane":
                 rdata = doc.GetActiveRenderData()
                 rdata[c4d.RDATA_PATH] = rSettings["outputName"]
-                for frameChunk in frameChunks:
+                #for frameChunk in frameChunks:
 
-                    rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
-                    rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
-                    rdata[c4d.RDATA_FRAMESTEP] = 1
-                    c4d.CallCommand(12099)
+                rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( rSettings["startFrame"], doc.GetFps())
+                rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( rSettings["endFrame"],  doc.GetFps())
+                #rdata[c4d.RDATA_MULTIPASS_SAVEIMAGE] = False #turns off save multipass
+                rdata[c4d.RDATA_FRAMESTEP] = 1
+                c4d.CallCommand(12099)
 
 
 
-            tmpPath = os.path.join(os.path.dirname(rSettings["outputName"]), "tmp")
-            if os.path.exists(tmpPath):
-                try:
-                    shutil.rmtree(tmpPath)
-                except:
-                    pass
+            #tmpPath = os.path.join(os.path.dirname(rSettings["outputName"]), "tmp")
+            #if os.path.exists(tmpPath):
+            #    try:
+            #        shutil.rmtree(tmpPath)
+            #    except:
+            #        pass
 
-            if (
-                os.path.exists(os.path.dirname(outputName))
-                and len(os.listdir(os.path.dirname(outputName))) > 0
-            ):
-                return "Result=Success"
-            else:
-                return "unknown error (files do not exist)"
-
+            #if (
+            #    os.path.exists(os.path.dirname(outputName))
+            #    and len(os.listdir(os.path.dirname(outputName))) > 0
+            #):
+            #    return "Result=Success"
+            #else:
+            #    return "unknown error (files do not exist)"
+            return "Result=Success"
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
             erStr = "%s ERROR - sm_default_imageRender %s:\n%s" % (
