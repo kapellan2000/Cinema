@@ -472,18 +472,14 @@ class Prism_Cinema_Functions(object):
 
         if origin.chb_wholeScene.isChecked():
             objList, obj = self.get_all_objects(doc.GetFirstObject(), lambda x: x, [])
-            print(objList)
-            print(obj)
+
         else:
             objList = doc.GetSelection()
-
-        #setupFolder="E:/Untitl_objExport/Untitled 1_objExport/"#folde
-
 
 
         if chosenExportMethod in fileFormatDict:
             # create folder, if not present
-            
+            print("A")
 
             #if not os.path.exists(setupFolder):
              #   os.makedirs(setupFolder)
@@ -493,12 +489,19 @@ class Prism_Cinema_Functions(object):
             tmpList = []
 
             for obj in objList:
+                print("B")
                 # check type
-                if isinstance(obj, c4d.BaseObject):
+                if isinstance(obj, c4d.BaseObject) or origin.chb_wholeScene.isChecked():
+                    print("C")
                     if expType == ".obj" or expType == ".fbx":
 
                         for i in range(startFrame, endFrame + 1):
-                            tmpList.insert(0, obj)
+                            if origin.chb_wholeScene.isChecked():
+                                obj = ""
+                                for obj in objList:
+                                    tmpList.insert(0, obj)
+                            else:
+                                tmpList.insert(0, obj)
                             # create temp doc and insert selected obj into it
                             theTempDoc = documents.IsolateObjects(doc, tmpList)
                             # some list-stuff
@@ -521,6 +524,7 @@ class Prism_Cinema_Functions(object):
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
                     if expType == ".abc":
+                        print("D")
                         # Get Alembic export plugin, 1028082 is its ID
                         plug = plugins.FindPlugin(1028082, c4d.PLUGINTYPE_SCENESAVER)
 
@@ -540,8 +544,11 @@ class Prism_Cinema_Functions(object):
                             abcExport[c4d.ABCEXPORT_FRAME_END] = endFrame
                             abcExport[c4d.ABCEXPORT_FRAME_STEP] = 1
                             abcExport[c4d.ABCEXPORT_SUBFRAMES] = 1
-
-                            abcExport[c4d.ABCEXPORT_SELECTION_ONLY] = True
+                            if origin.chb_wholeScene.isChecked():
+                                abcExport[c4d.ABCEXPORT_SELECTION_ONLY] = False
+                                print("select only")
+                            else:
+                                abcExport[c4d.ABCEXPORT_SELECTION_ONLY] = True
                             abcExport[c4d.ABCEXPORT_PARTICLES] = True
                             abcExport[c4d.ABCEXPORT_PARTICLE_GEOMETRY] = True
 
@@ -551,7 +558,8 @@ class Prism_Cinema_Functions(object):
                             else:
                                 print ("Export failed!")
                             outputName = foutputName
-                        
+                if origin.chb_wholeScene.isChecked():
+                    break
                             
             if expType == ".c4d":
                 if origin.chb_wholeScene.isChecked():
