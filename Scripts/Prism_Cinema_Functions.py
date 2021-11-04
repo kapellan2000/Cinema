@@ -382,7 +382,12 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_export_startup(self, origin):
-        pass
+        origin.l_convertExport.setVisible(False)
+        origin.l_additionalOptions.setVisible(False)
+        origin.chb_additionalOptions.setVisible(False)
+        origin.chb_convertExport.setVisible(False)
+        origin.w_convertExport.setVisible(False)
+        origin.w_additionalOptions.setVisible(False)
 
     # 	@err_catcher(name=__name__)
     # 	def sm_export_setTaskText(self, origin, prevTaskName, newTaskName):
@@ -479,22 +484,16 @@ class Prism_Cinema_Functions(object):
 
         if chosenExportMethod in fileFormatDict:
             # create folder, if not present
-            print("A")
-
             #if not os.path.exists(setupFolder):
              #   os.makedirs(setupFolder)
-
             fileFormatEnding = fileFormatDict[chosenExportMethod][0]
             cmdNr = fileFormatDict[chosenExportMethod][1]
             tmpList = []
 
             for obj in objList:
-                print("B")
                 # check type
                 if isinstance(obj, c4d.BaseObject) or origin.chb_wholeScene.isChecked():
-                    print("C")
                     if expType == ".obj" or expType == ".fbx":
-
                         for i in range(startFrame, endFrame + 1):
                             if origin.chb_wholeScene.isChecked():
                                 obj = ""
@@ -510,7 +509,6 @@ class Prism_Cinema_Functions(object):
                             time = c4d.BaseTime(i, fps)
                             doc.SetTime(time)
                             
-
                             foutputName = outputName.replace("####", format(i, "04")).replace("\\","/")
                             # steal active rendersettings (incl. children) & set them active in saved doc
 
@@ -519,7 +517,12 @@ class Prism_Cinema_Functions(object):
 
                             documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
                             # some list-stuff
-                            tmpList.remove(obj)
+                            if origin.chb_wholeScene.isChecked():
+                                obj = ""
+                                for obj in objList:
+                                    tmpList.remove(obj)
+                            else:
+                                tmpList.remove(obj)
                             # kill temp doc
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
@@ -597,8 +600,12 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_export_typeChanged(self, origin, idx):
-        pass
-
+        if idx == ".c4d":
+            origin.chb_wholeScene.setChecked(True)
+            origin.chb_wholeScene.setDisabled(True)
+        else:
+            origin.chb_wholeScene.setChecked(False)
+            origin.chb_wholeScene.setDisabled(False)
     @err_catcher(name=__name__)
     def sm_export_preExecute(self, origin, startFrame, endFrame):
         warnings = []
@@ -625,7 +632,6 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_startup(self, origin):
-        print("render")
         pass
 
     @err_catcher(name=__name__)
@@ -636,7 +642,14 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_refreshPasses(self, origin):
-        pass
+        #origin.gb_passes.setVisible(False)
+        origin.b_addPasses.setVisible(False)
+        origin.lw_passes.setVisible(False)
+        
+        #self.tw_passes.itemChanged.connect(self.setPassData)
+        #pass
+
+    
 
     @err_catcher(name=__name__)
     def sm_render_openPasses(self, origin, item=None):
@@ -654,36 +667,38 @@ class Prism_Cinema_Functions(object):
     def sm_render_startLocalRender(self, origin, outputName, rSettings):
 
         doc = documents.GetActiveDocument()
-        print(outputName)
-        print(rSettings)
         if rSettings["startFrame"] is None:
             frameChunks = [[x, x] for x in rSettings["frames"]]
         else:
             frameChunks = [[rSettings["startFrame"], rSettings["endFrame"]]]
 
-        curRenderer = "octane"
-        #if curRenderer == "octane":
-
-        #    rdata = doc.GetActiveRenderData()
-        #    rdata[c4d.RDATA_PATH] = outputName# rSettings["outputName"]
-        #    for frameChunk in frameChunks:
-        #        rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( frameChunk[0], doc.GetFps())
-        #        rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( frameChunk[1],  doc.GetFps())
-        #        rdata[c4d.RDATA_FRAMESTEP] = 1
-        #        c4d.CallCommand(12099)
-
         try:
-            curRenderer = "octane"
-            if curRenderer == "octane":
-                rdata = doc.GetActiveRenderData()
-                rdata[c4d.RDATA_PATH] = rSettings["outputName"]
-                #for frameChunk in frameChunks:
-
-                rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( rSettings["startFrame"], doc.GetFps())
-                rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( rSettings["endFrame"],  doc.GetFps())
-                #rdata[c4d.RDATA_MULTIPASS_SAVEIMAGE] = False #turns off save multipass
-                rdata[c4d.RDATA_FRAMESTEP] = 1
-                c4d.CallCommand(12099)
+            rdata = doc.GetActiveRenderData()
+            rdata[c4d.RDATA_PATH] = rSettings["outputName"]
+            if origin.gb_passes.isChecked():
+                try:
+                    octane = rdata.GetFirstVideoPost()
+                    octane[c4d.SET_PASSES_ENABLED] = True
+                    octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"]
+                except:
+                    pass
+                rdata()[c4d.RDATA_MULTIPASS_SAVEIMAGE] = True
+                rdata[c4d.RDATA_MULTIPASS_FILENAME] = rSettings["outputName"]
+            else:
+                try:
+                    octane = rdata.GetFirstVideoPost()
+                    octane[c4d.SET_PASSES_ENABLED] = False
+                    octane[c4d.SET_PASSES_SAVEPATH] = ""
+                except:
+                    pass
+                rdata()[c4d.RDATA_MULTIPASS_SAVEIMAGE] = False
+                rdata[c4d.RDATA_MULTIPASS_FILENAME] = ""
+                
+            rdata[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( rSettings["startFrame"], doc.GetFps())
+            rdata[c4d.RDATA_FRAMETO] = c4d.BaseTime( rSettings["endFrame"],  doc.GetFps())
+            #rdata[c4d.RDATA_MULTIPASS_SAVEIMAGE] = False #turns off save multipass
+            rdata[c4d.RDATA_FRAMESTEP] = 1
+            c4d.CallCommand(12099)
 
 
 
