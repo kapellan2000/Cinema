@@ -60,8 +60,51 @@ class Prism_Cinema_Functions(object):
             qApp = QApplication.instance()
             if qApp is None:
                 qApp = QApplication(sys.argv)
+
+
+            with (
+                open(
+                    os.path.join(
+                        self.core.prismRoot,
+                        "Plugins",
+                        "Apps",
+                        "Cinema",
+                        "UserInterfaces",
+                        "CinemaStyleSheet",
+                        "Cinema.qss",
+                    ),
+                    "r",
+                )
+            ) as ssFile:
+                ssheet = ssFile.read()
+
+            ssheet = ssheet.replace(
+                "qss:",
+                os.path.join(
+                    self.core.prismRoot,
+                    "Plugins",
+                    "Apps",
+                    "Cinema",
+                    "UserInterfaces",
+                    "CinemaStyleSheet",
+                ).replace("\\", "/")
+                + "/",
+            )
+
+
+
+
+            qApp.setStyleSheet(ssheet)
+            appIcon = QIcon(
+                os.path.join(
+                    self.core.prismRoot, "Scripts", "UserInterfacesPrism", "p_tray.png"
+                )
+            )
+            qApp.setWindowIcon(appIcon)
+            
             origin.messageParent = QWidget()
             origin.messageParent.setWindowFlags(origin.messageParent.windowFlags() ^ Qt.WindowStaysOnTopHint)
+
         origin.timer.stop()
 
         # 	for obj in QApplication.topLevelWidgets():
