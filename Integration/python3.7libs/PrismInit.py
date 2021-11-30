@@ -20,7 +20,6 @@ def prismInit(prismArgs=[]):
     if Dir not in sys.path:
         sys.path.append(Dir)
 
-
     #prismArgs.append("noUI")
     #prismArgs=[]
     import PrismCore
@@ -31,9 +30,10 @@ def prismInit(prismArgs=[]):
 
 def createPrismCore():
     prismRoot = os.getenv("PRISM_ROOT")
-    py_side_p = prismRoot + "/PythonLibs/Python37/PySide"
-    sys.path.append(py_side_p)
 
+    py_side_p = prismRoot + "/PythonLibs/Python37/PySide"
+    #py_side_p = prismRoot + "/PythonLibs/Python39/PySide"
+    sys.path.append(py_side_p)
     global pcore
 
     pcore = prismInit()

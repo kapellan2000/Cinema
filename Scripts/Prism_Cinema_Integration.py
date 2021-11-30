@@ -46,6 +46,13 @@ except:
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
+if platform.system() == "Windows":
+    if sys.version[0] == "3":
+        import winreg as _winreg
+    else:
+        import _winreg
+
+
 
 class Prism_Cinema_Integration(object):
     def __init__(self, core, plugin):
@@ -94,11 +101,58 @@ class Prism_Cinema_Integration(object):
                 os.path.dirname(os.path.dirname(__file__)), "Integration"
             )
             addedFiles = []
-            
-            if int(installPath.split("4D R")[1].split("_")[0])<23:
+            version = installPath.split("4D R")[1].split("_")[0]
+            if int(version)<23:
                 QMessageBox.warning(self.core.messageParent, "Prism Integration", "Unsupported version. Use Cinema R23 or higher")
                 return ""
-            
+
+
+
+            #python lib fix path
+            try:
+                psPaths = []
+                if platform.system() == "Windows":
+                    key = _winreg.OpenKey(
+                        _winreg.HKEY_LOCAL_MACHINE,
+                        "SOFTWARE\\Maxon",
+                        0,
+                        _winreg.KEY_READ | _winreg.KEY_WOW64_64KEY,
+                    )
+                    idx = 0
+                    while True:
+                        try:
+                            afVersion = _winreg.EnumKey(key, idx)
+                            psKey = _winreg.OpenKey(
+                                _winreg.HKEY_LOCAL_MACHINE,
+                                "SOFTWARE\\Maxon\\" + afVersion,
+                                0,
+                                _winreg.KEY_READ | _winreg.KEY_WOW64_64KEY,
+                            )
+                            path = _winreg.QueryValueEx(psKey, "Location")[0]
+                            path = os.path.normpath(path)
+                            psPaths.append(path)
+                            idx += 1
+                        except:
+                            break
+            except:
+                print("1")
+            for i in psPaths:
+                if version in i:
+                    python_path = os.path.join(i, "resource\modules\python\libs")
+                    python_dir = os.listdir(python_path)
+                    for dirs in python_dir:
+                        if "win64.framework" in dirs:
+                            python_fix_path =  os.path.join(python_path, dirs)
+                            save_backup = os.path.join(python_fix_path, "python3.dll")
+                            if os.path.exists(save_backup):
+                                os.rename(save_backup, os.path.join(python_fix_path, "python3_backup.dll"))
+
+                            python_lib = os.path.join(integrationBase, "python3.9libs", "python3.dll")
+                            shutil.copy2(python_lib, python_fix_path)
+
+
+            #python lib fix path end
+
             initpath = os.path.join(installPath, "plugins/prism", "pythonrc.pyp")
 
             if os.path.exists(initpath):
