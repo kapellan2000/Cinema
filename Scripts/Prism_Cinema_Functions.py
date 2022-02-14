@@ -723,6 +723,7 @@ class Prism_Cinema_Functions(object):
                     octane = rdata.GetFirstVideoPost()
                     octane[c4d.SET_PASSES_ENABLED] = True
                     octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"]
+                    octane[c4d.RDATA_PROJECTFILE] = False
                 except:
                     pass
                 rdata()[c4d.RDATA_MULTIPASS_SAVEIMAGE] = True
@@ -1164,8 +1165,10 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def onStateManagerOpen(self, origin):
-        pass
-
+        origin.b_description.setMinimumWidth(35 * self.core.uiScaleFactor)
+        origin.b_description.setMaximumWidth(35 * self.core.uiScaleFactor)
+        origin.b_preview.setMinimumWidth(35 * self.core.uiScaleFactor)
+        origin.b_preview.setMaximumWidth(35 * self.core.uiScaleFactor)
     @err_catcher(name=__name__)
     def sm_saveStates(self, origin, buf):
         pass
