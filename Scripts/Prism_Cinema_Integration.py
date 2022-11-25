@@ -101,7 +101,10 @@ class Prism_Cinema_Integration(object):
                 os.path.dirname(os.path.dirname(__file__)), "Integration"
             )
             addedFiles = []
-            version = installPath.split("4D R")[1].split("_")[0]
+            if "4D R" in installPath:
+                version = installPath.split("4D R")[1].split("_")[0]
+            else:
+                version = installPath.split("4D ")[1].split("_")[0]
             if int(version)<23:
                 QMessageBox.warning(self.core.messageParent, "Prism Integration", "Unsupported version. Use Cinema R23 or higher")
                 return ""

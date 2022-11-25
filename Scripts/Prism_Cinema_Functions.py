@@ -1147,7 +1147,33 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_playblast_createPlayblast(self, origin, jobFrames, outputName):
-        pass
+        doc = documents.GetActiveDocument()
+        rd = doc.GetActiveRenderData()
+
+        rd[c4d.RDATA_SAVEIMAGE] = True
+        rd[c4d.RDATA_RENDERENGINE] = c4d.RDATA_RENDERENGINE_PREVIEWHARDWARE
+        rd[c4d.RDATA_PATH] = outputName
+        rd[c4d.RDATA_FORMAT] = c4d.FILTER_MOVIE
+        #rd[c4d.RDATA_FRAMESEQUENCE] = 0
+        rd[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( jobFrames[0], doc.GetFps())
+        rd[c4d.RDATA_FRAMETO] = c4d.BaseTime( jobFrames[1], doc.GetFps())
+
+
+        # Creates a Multi Pass Bitmaps that will store the render result
+        bmp = c4d.bitmaps.MultipassBitmap(int(rd[c4d.RDATA_XRES]), int(rd[c4d.RDATA_YRES]), c4d.COLORMODE_RGB)
+        if bmp is None:
+            raise RuntimeError("Failed to create the bitmap.")
+
+        # Adds an alpha channel
+        bmp.AddChannel(True, True)
+
+        # Renders the document
+        render_flags = (c4d.RENDERFLAGS_PREVIEWRENDER | c4d.RDATA_SHOWHUD | c4d.RENDERFLAGS_NODOCUMENTCLONE)
+
+        c4d.documents.RenderDocument(doc, rd.GetData(), bmp, render_flags)
+
+        # Displays the render in the Picture Viewer
+        #c4d.bitmaps.ShowBitmap(bmp)
 
     @err_catcher(name=__name__)
     def sm_playblast_preExecute(self, origin):
@@ -1169,18 +1195,67 @@ class Prism_Cinema_Functions(object):
         origin.b_description.setMaximumWidth(35 * self.core.uiScaleFactor)
         origin.b_preview.setMinimumWidth(35 * self.core.uiScaleFactor)
         origin.b_preview.setMaximumWidth(35 * self.core.uiScaleFactor)
+        
+        #self.outputFormats = [
+        #    ".exr",
+        #    ".png",
+        #    ".jpg",
+        #    ".psd",
+        #]
+        #origin.cb_format.addItems()
     @err_catcher(name=__name__)
+
+    def sm_userData(self, data, name, opr):
+        doc = documents.GetActiveDocument()
+        data_id = None
+        for id, bc in doc.GetUserDataContainer():
+
+            # Retrieves the current name we iterates
+            currentName = bc.GetString(c4d.DESC_NAME)
+            # If the name is the same return True
+            if currentName == name:
+                data_id = id[1].id
+                break
+        if opr=="w":
+            if data_id:
+                #aaa = doc[c4d.ID_USERDATA,1]
+                doc[c4d.ID_USERDATA,data_id] = data
+            else:
+                obj = doc
+
+                bc = c4d.GetCustomDataTypeDefault(c4d.DTYPE_STRING) # Create default container
+                bc[c4d.DESC_NAME] = name # Rename the entry
+                bc.SetInt32(c4d.DESC_CUSTOMGUI, c4d.CUSTOMGUI_STRINGMULTI) # Set user data gui
+
+                element = obj.AddUserData(bc) # Add userdata container
+                obj[element] = data # Assign a value
+                c4d.EventAdd() # Update
+        elif opr=="r":
+            if data_id:
+                return (doc[c4d.ID_USERDATA,data_id])
+            else:
+                return(None)
+        else:
+            return(None)
+
+
+
     def sm_saveStates(self, origin, buf):
-        pass
+        self.sm_userData(buf,"PrismStates","w")
+
+
+
 
     @err_catcher(name=__name__)
     def sm_saveImports(self, origin, importPaths):
-        pass
+        self.sm_userData(importPaths,"PrismImports","w")
+
 
     @err_catcher(name=__name__)
     def sm_readStates(self, origin):
         #stateData = hou.node("/obj").userData("PrismStates")
-        stateData = None
+        
+        stateData = self.sm_userData("","PrismStates","r")
         if stateData is not None:
             return stateData
 
