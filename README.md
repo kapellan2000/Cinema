@@ -1,8 +1,8 @@
 # Cinema 4D Prism App
 
-**Note: This plugin has been tested in Windows 10 + Cinema R23 + prism v1.3.0.81**
+**Note: This plugin has been tested in Windows 10 + Cinema R26 + prism v2.0.beta**
 
-Support R23 or higher
+Support R26 or higher
 
 # Installation
 ![install](https://user-images.githubusercontent.com/21256398/135682316-e4f56de7-5941-4881-bb71-291ea0a477e1.gif)
