@@ -47,7 +47,7 @@ from PrismUtils.Decorators import err_catcher as err_catcher
 import c4d
 from c4d import documents, plugins
 
-import time
+
 
 class Prism_Cinema_Functions(object):
     def __init__(self, core, plugin):
@@ -137,11 +137,12 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sceneOpen(self, origin):
-        if hasattr(origin, "asThread") and origin.asThread.isRunning():
-            origin.startasThread()
+        pass
+        #if hasattr(origin, "asThread") and origin.asThread.isRunning():
+        #    origin.startasThread()
         #origin.sceneUnload()
         #self.updateEnvironment()
-        
+
     @err_catcher(name=__name__)
     def updateEnvironment(self):
         envvars = {
@@ -217,13 +218,13 @@ class Prism_Cinema_Functions(object):
         doc = documents.GetActiveDocument()
         g_dname = doc.GetDocumentName()
         g_path = doc.GetDocumentPath()
-        if g_path:
+        if g_dname != "Untitled":
             if path:
                 return g_path + "/" + g_dname
             else:
                 return g_dname
         else:
-            return ""
+            return
 
 
     @err_catcher(name=__name__)
@@ -261,9 +262,7 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def setFrameRange(self, origin, startFrame, endFrame):
-        doc = documents.GetActiveDocument()
-        doc.SetMinTime(c4d.BaseTime(startFrame/doc.GetFps()))
-        doc.SetMaxTime(c4d.BaseTime(endFrame/doc.GetFps()))
+        pass
 
     @err_catcher(name=__name__)
     def getFPS(self, origin):
@@ -273,8 +272,7 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def setFPS(self, origin, fps):
-        doc = documents.GetActiveDocument()
-        doc.SetFps(fps)
+        pass
 
     @err_catcher(name=__name__)
     def getAppVersion(self, origin):
@@ -291,9 +289,9 @@ class Prism_Cinema_Functions(object):
         if (not filepath.endswith(".c4d")):
             return False
         c4d.documents.LoadFile(filepath)
-        self.core.sceneOpen()
+
         return True
-        
+
     @err_catcher(name=__name__)
     def correctExt(self, origin, lfilepath):
         return lfilepath
@@ -968,6 +966,10 @@ class Prism_Cinema_Functions(object):
              #       print(self.get_userData(i))
 
 
+
+
+
+
             elif action == 0 or update==True or action == 16384: 
                 
                 updateCache = True
@@ -1017,6 +1019,8 @@ class Prism_Cinema_Functions(object):
                         c4d.EventAdd()
 
 
+
+
 #        for i in importedNodes:
 #            cams = cmds.listCameras()
 #            if i in cams:
@@ -1043,6 +1047,10 @@ class Prism_Cinema_Functions(object):
 
         rDict["mode"] = "ApplyCache" if (applyCache or updateCache) else "ImportFile"
         return rDict
+
+
+
+
 
 
     def basicImport(self, filepath, kwargs):
@@ -1139,7 +1147,33 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_playblast_createPlayblast(self, origin, jobFrames, outputName):
-        pass
+        doc = documents.GetActiveDocument()
+        rd = doc.GetActiveRenderData()
+
+        rd[c4d.RDATA_SAVEIMAGE] = True
+        rd[c4d.RDATA_RENDERENGINE] = c4d.RDATA_RENDERENGINE_PREVIEWHARDWARE
+        rd[c4d.RDATA_PATH] = outputName
+        rd[c4d.RDATA_FORMAT] = c4d.FILTER_MOVIE
+        #rd[c4d.RDATA_FRAMESEQUENCE] = 0
+        rd[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( jobFrames[0], doc.GetFps())
+        rd[c4d.RDATA_FRAMETO] = c4d.BaseTime( jobFrames[1], doc.GetFps())
+
+
+        # Creates a Multi Pass Bitmaps that will store the render result
+        bmp = c4d.bitmaps.MultipassBitmap(int(rd[c4d.RDATA_XRES]), int(rd[c4d.RDATA_YRES]), c4d.COLORMODE_RGB)
+        if bmp is None:
+            raise RuntimeError("Failed to create the bitmap.")
+
+        # Adds an alpha channel
+        bmp.AddChannel(True, True)
+
+        # Renders the document
+        render_flags = (c4d.RENDERFLAGS_PREVIEWRENDER | c4d.RDATA_SHOWHUD | c4d.RENDERFLAGS_NODOCUMENTCLONE)
+
+        c4d.documents.RenderDocument(doc, rd.GetData(), bmp, render_flags)
+
+        # Displays the render in the Picture Viewer
+        #c4d.bitmaps.ShowBitmap(bmp)
 
     @err_catcher(name=__name__)
     def sm_playblast_preExecute(self, origin):
@@ -1204,12 +1238,18 @@ class Prism_Cinema_Functions(object):
         else:
             return(None)
 
+
+
     def sm_saveStates(self, origin, buf):
         self.sm_userData(buf,"PrismStates","w")
+
+
+
 
     @err_catcher(name=__name__)
     def sm_saveImports(self, origin, importPaths):
         self.sm_userData(importPaths,"PrismImports","w")
+
 
     @err_catcher(name=__name__)
     def sm_readStates(self, origin):

@@ -49,7 +49,7 @@ class Prism_Cinema_externalAccess_Functions(object):
     def __init__(self, core, plugin):
         self.core = core
         self.plugin = plugin
-
+        self.core.registerCallback("getPresetScenes", self.getPresetScenes, plugin=self.plugin)
     @err_catcher(name=__name__)
     def getAutobackPath(self, origin, tab):
         autobackpath = ""
@@ -73,3 +73,7 @@ class Prism_Cinema_externalAccess_Functions(object):
     @err_catcher(name=__name__)
     def onProjectCreated(self, origin, projectPath, projectName):
         pass
+    def getPresetScenes(self, presetScenes):
+        presetDir = os.path.join(self.pluginDirectory, "Presets")
+        scenes = self.core.entities.getPresetScenesFromFolder(presetDir)
+        presetScenes += scenes
