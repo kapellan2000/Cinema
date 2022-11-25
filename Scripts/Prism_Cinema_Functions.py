@@ -967,7 +967,6 @@ class Prism_Cinema_Functions(object):
              #   for i in obj:
              #       print(self.get_userData(i))
 
-
             elif action == 0 or update==True or action == 16384: 
                 
                 updateCache = True
@@ -1139,8 +1138,33 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_playblast_createPlayblast(self, origin, jobFrames, outputName):
-        pass
+        doc = documents.GetActiveDocument()
+        rd = doc.GetActiveRenderData()
 
+        rd[c4d.RDATA_SAVEIMAGE] = True
+        rd[c4d.RDATA_RENDERENGINE] = c4d.RDATA_RENDERENGINE_PREVIEWHARDWARE
+        rd[c4d.RDATA_PATH] = outputName
+        rd[c4d.RDATA_FORMAT] = c4d.FILTER_MOVIE
+        #rd[c4d.RDATA_FRAMESEQUENCE] = 0
+        rd[c4d.RDATA_FRAMEFROM] = c4d.BaseTime( jobFrames[0], doc.GetFps())
+        rd[c4d.RDATA_FRAMETO] = c4d.BaseTime( jobFrames[1], doc.GetFps())
+
+
+        # Creates a Multi Pass Bitmaps that will store the render result
+        bmp = c4d.bitmaps.MultipassBitmap(int(rd[c4d.RDATA_XRES]), int(rd[c4d.RDATA_YRES]), c4d.COLORMODE_RGB)
+        if bmp is None:
+            raise RuntimeError("Failed to create the bitmap.")
+
+        # Adds an alpha channel
+        bmp.AddChannel(True, True)
+
+        # Renders the document
+        render_flags = (c4d.RENDERFLAGS_PREVIEWRENDER | c4d.RDATA_SHOWHUD | c4d.RENDERFLAGS_NODOCUMENTCLONE)
+
+        c4d.documents.RenderDocument(doc, rd.GetData(), bmp, render_flags)
+
+        # Displays the render in the Picture Viewer
+        #c4d.bitmaps.ShowBitmap(bmp)
     @err_catcher(name=__name__)
     def sm_playblast_preExecute(self, origin):
         warnings = []
@@ -1203,7 +1227,6 @@ class Prism_Cinema_Functions(object):
                 return(None)
         else:
             return(None)
-
     def sm_saveStates(self, origin, buf):
         self.sm_userData(buf,"PrismStates","w")
 
