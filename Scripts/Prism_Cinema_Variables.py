@@ -53,4 +53,3 @@ class Prism_Cinema_Variables(object):
         self.appIcon = os.path.join(
             self.pluginDirectory, "UserInterfaces", "cinema.ico"
         )
-

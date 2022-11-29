@@ -47,7 +47,7 @@ from PrismUtils.Decorators import err_catcher as err_catcher
 import c4d
 from c4d import documents, plugins
 
-
+import time
 
 class Prism_Cinema_Functions(object):
     def __init__(self, core, plugin):
@@ -137,12 +137,11 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sceneOpen(self, origin):
-        pass
-        #if hasattr(origin, "asThread") and origin.asThread.isRunning():
-        #    origin.startasThread()
+        if hasattr(origin, "asThread") and origin.asThread.isRunning():
+            origin.startasThread()
         #origin.sceneUnload()
         #self.updateEnvironment()
-
+        
     @err_catcher(name=__name__)
     def updateEnvironment(self):
         envvars = {
@@ -218,13 +217,13 @@ class Prism_Cinema_Functions(object):
         doc = documents.GetActiveDocument()
         g_dname = doc.GetDocumentName()
         g_path = doc.GetDocumentPath()
-        if g_dname != "Untitled":
+        if g_path:
             if path:
                 return g_path + "/" + g_dname
             else:
                 return g_dname
         else:
-            return
+            return ""
 
 
     @err_catcher(name=__name__)
@@ -235,7 +234,10 @@ class Prism_Cinema_Functions(object):
     def saveScene(self, origin, filepath, details={}):
         # save scenefile
         doc = documents.GetActiveDocument()
-        doc.SetDocumentPath(filepath.replace(filepath.split("/")[-1],""))
+        pt = filepath.replace(filepath.split("/")[-1],"")
+        doc.SetDocumentPath(pt)
+        if not os.path.exists(pt):
+            os.makedirs(pt)
         doc.SetDocumentName(filepath.split("/")[-1])
         
         return documents.SaveDocument(doc, filepath, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
@@ -262,7 +264,9 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def setFrameRange(self, origin, startFrame, endFrame):
-        pass
+        doc = documents.GetActiveDocument()
+        doc.SetMinTime(c4d.BaseTime(startFrame/doc.GetFps()))
+        doc.SetMaxTime(c4d.BaseTime(endFrame/doc.GetFps()))
 
     @err_catcher(name=__name__)
     def getFPS(self, origin):
@@ -272,7 +276,8 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def setFPS(self, origin, fps):
-        pass
+        doc = documents.GetActiveDocument()
+        doc.SetFps(fps)
 
     @err_catcher(name=__name__)
     def getAppVersion(self, origin):
@@ -289,9 +294,9 @@ class Prism_Cinema_Functions(object):
         if (not filepath.endswith(".c4d")):
             return False
         c4d.documents.LoadFile(filepath)
-
+        self.core.sceneOpen()
         return True
-
+        
     @err_catcher(name=__name__)
     def correctExt(self, origin, lfilepath):
         return lfilepath
@@ -425,11 +430,11 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_export_startup(self, origin):
-        origin.l_convertExport.setVisible(False)
+        #origin.l_convertExport.setVisible(False)
         origin.l_additionalOptions.setVisible(False)
         origin.chb_additionalOptions.setVisible(False)
-        origin.chb_convertExport.setVisible(False)
-        origin.w_convertExport.setVisible(False)
+        #origin.chb_convertExport.setVisible(False)
+        #origin.w_convertExport.setVisible(False)
         origin.w_additionalOptions.setVisible(False)
 
     # 	@err_catcher(name=__name__)
@@ -965,11 +970,6 @@ class Prism_Cinema_Functions(object):
              #   for i in obj:
              #       print(self.get_userData(i))
 
-
-
-
-
-
             elif action == 0 or update==True or action == 16384: 
                 
                 updateCache = True
@@ -1019,8 +1019,6 @@ class Prism_Cinema_Functions(object):
                         c4d.EventAdd()
 
 
-
-
 #        for i in importedNodes:
 #            cams = cmds.listCameras()
 #            if i in cams:
@@ -1047,10 +1045,6 @@ class Prism_Cinema_Functions(object):
 
         rDict["mode"] = "ApplyCache" if (applyCache or updateCache) else "ImportFile"
         return rDict
-
-
-
-
 
 
     def basicImport(self, filepath, kwargs):
@@ -1174,7 +1168,6 @@ class Prism_Cinema_Functions(object):
 
         # Displays the render in the Picture Viewer
         #c4d.bitmaps.ShowBitmap(bmp)
-
     @err_catcher(name=__name__)
     def sm_playblast_preExecute(self, origin):
         warnings = []
@@ -1237,19 +1230,12 @@ class Prism_Cinema_Functions(object):
                 return(None)
         else:
             return(None)
-
-
-
     def sm_saveStates(self, origin, buf):
         self.sm_userData(buf,"PrismStates","w")
-
-
-
 
     @err_catcher(name=__name__)
     def sm_saveImports(self, origin, importPaths):
         self.sm_userData(importPaths,"PrismImports","w")
-
 
     @err_catcher(name=__name__)
     def sm_readStates(self, origin):
