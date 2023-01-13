@@ -521,7 +521,7 @@ class Prism_Cinema_Functions(object):
             objList.append(doc.SearchObject(x))
 
 
-        myObject = doc.SearchObject("Cube")#select
+        #myObject = doc.SearchObject("Cube")#select
 
         if origin.chb_wholeScene.isChecked():
             objList, obj = self.get_all_objects(doc.GetFirstObject(), lambda x: x, [])
@@ -541,7 +541,7 @@ class Prism_Cinema_Functions(object):
             for obj in objList:
                 # check type
                 if isinstance(obj, c4d.BaseObject) or origin.chb_wholeScene.isChecked():
-                    if expType == ".obj" or expType == ".fbx":
+                    if expType == ".obj":
                         for i in range(startFrame, endFrame + 1):
                             if origin.chb_wholeScene.isChecked():
                                 obj = ""
@@ -558,10 +558,6 @@ class Prism_Cinema_Functions(object):
                             doc.SetTime(time)
                             
                             foutputName = outputName.replace("####", format(i, "04")).replace("\\","/")
-                            # steal active rendersettings (incl. children) & set them active in saved doc
-
-                            # save temp doc in folder using the original project-filename & objectname
-                            #path = str(setupFolder + obj.GetName() + str(fileFormatEnding))
 
                             documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
                             # some list-stuff
@@ -574,10 +570,59 @@ class Prism_Cinema_Functions(object):
                             # kill temp doc
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
+                    if expType == ".fbx":
+                        foutputName = outputName.replace("\\","/")
+                        backup_options = {}
+                        export_options = {c4d.FBXEXPORT_LIGHTS: 1,
+                                          c4d.FBXEXPORT_CAMERAS: 0,
+                                          c4d.FBXEXPORT_SPLINES: 1,
+                                          # Geometry and Materials
+                                          c4d.FBXEXPORT_SAVE_NORMALS: 1,
+                                          #c4d.FBXEXPORT_TEXTURES: 1,
+                                          c4d.FBXEXPORT_EMBED_TEXTURES: 1,
+                                          c4d.FBXEXPORT_FBX_VERSION: c4d.FBX_EXPORTVERSION_NATIVE,
+                                          # cancel all these one
+                                          c4d.FBXEXPORT_PLA_TO_VERTEXCACHE: 0,
+                                          c4d.FBXEXPORT_SAVE_VERTEX_MAPS_AS_COLORS: 0,
+                                          c4d.FBXEXPORT_TRIANGULATE: 0,
+                                          c4d.FBXEXPORT_SDS_SUBDIVISION: 1,
+                                          c4d.FBXEXPORT_ASCII: 0}
+                        export_options[c4d.FBXEXPORT_TRACKS] = 1
+                        if origin.chb_wholeScene.isChecked():
+                            export_options[c4d.FBXEXPORT_SELECTION_ONLY] = 0
+                        else:
+                            export_options[c4d.FBXEXPORT_SELECTION_ONLY] = 1
+                        if startFrame == endFrame:
+                            export_options[c4d.FBXEXPORT_BAKE_ALL_FRAMES] = 0
+                        else:
+                            export_options[c4d.FBXEXPORT_BAKE_ALL_FRAMES] = 1
+                        options = plugins.FindPlugin(cmdNr, c4d.PLUGINTYPE_SCENESAVER)
+                        
+                        for key in export_options:
+                            if options[key] != export_options[key]:
+                                backup_options[key] = options[key]
+                            print("____",export_options[key])
+                            options[key] = export_options[key]
+                            
+                        backup_start = doc.GetMinTime()
+                        backup_end = doc.GetMaxTime()
+                        self.core.setFrameRange(startFrame, endFrame)
+                        
+  
+                        # FBX Export
+                        documents.SaveDocument(doc, foutputName,
+                                               c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
+                
+                        # restore options
+                        for key in backup_options:
+                            if backup_options[key]:
+                                options[key] = backup_options[key]
+                        doc.SetMinTime(backup_start)
+                        doc.SetMaxTime(backup_end)  
+            
                     if expType == ".abc":
-                        print("D")
                         # Get Alembic export plugin, 1028082 is its ID
-                        plug = plugins.FindPlugin(1028082, c4d.PLUGINTYPE_SCENESAVER)
+                        plug = plugins.FindPlugin(cmdNr, c4d.PLUGINTYPE_SCENESAVER)
 
                         foutputName = outputName.replace("\\","/")
 
@@ -604,7 +649,7 @@ class Prism_Cinema_Functions(object):
                             abcExport[c4d.ABCEXPORT_PARTICLE_GEOMETRY] = True
 
                             # Finally export the document
-                            if documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, 1028082):
+                            if documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr):
                                 print(foutputName)
                             else:
                                 print ("Export failed!")
@@ -634,8 +679,8 @@ class Prism_Cinema_Functions(object):
 
 
         return outputName
-
-
+    #def sm_createStatePressed(self, origin, stateType):
+    #    pass
     @err_catcher(name=__name__)
     def sm_export_preDelete(self, origin):
         pass
