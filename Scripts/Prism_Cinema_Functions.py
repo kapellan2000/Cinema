@@ -601,7 +601,6 @@ class Prism_Cinema_Functions(object):
                         for key in export_options:
                             if options[key] != export_options[key]:
                                 backup_options[key] = options[key]
-                            print("____",export_options[key])
                             options[key] = export_options[key]
                             
                         backup_start = doc.GetMinTime()
@@ -754,7 +753,7 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_preSubmit(self, origin, rSettings):
-        pass
+        rSettings["outputName"] = rSettings["outputName"].replace("\\beauty","")
 
     @err_catcher(name=__name__)
     def sm_render_startLocalRender(self, origin, outputName, rSettings):
@@ -767,17 +766,17 @@ class Prism_Cinema_Functions(object):
 
         try:
             rdata = doc.GetActiveRenderData()
-            rdata[c4d.RDATA_PATH] = rSettings["outputName"]
+            rdata[c4d.RDATA_PATH] = rSettings["outputName"].replace("\\beauty","")
             if origin.gb_passes.isChecked():
                 try:
                     octane = rdata.GetFirstVideoPost()
                     octane[c4d.SET_PASSES_ENABLED] = True
-                    octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"]
+                    octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"].replace("\\beauty","")
                     octane[c4d.RDATA_PROJECTFILE] = False
                 except:
                     pass
                 rdata()[c4d.RDATA_MULTIPASS_SAVEIMAGE] = True
-                rdata[c4d.RDATA_MULTIPASS_FILENAME] = rSettings["outputName"]
+                rdata[c4d.RDATA_MULTIPASS_FILENAME] = rSettings["outputName"].replace("\\beauty","")
             else:
                 try:
                     octane = rdata.GetFirstVideoPost()
@@ -794,22 +793,6 @@ class Prism_Cinema_Functions(object):
             rdata[c4d.RDATA_FRAMESTEP] = 1
             c4d.CallCommand(12099)
 
-
-
-            #tmpPath = os.path.join(os.path.dirname(rSettings["outputName"]), "tmp")
-            #if os.path.exists(tmpPath):
-            #    try:
-            #        shutil.rmtree(tmpPath)
-            #    except:
-            #        pass
-
-            #if (
-            #    os.path.exists(os.path.dirname(outputName))
-            #    and len(os.listdir(os.path.dirname(outputName))) > 0
-            #):
-            #    return "Result=Success"
-            #else:
-            #    return "unknown error (files do not exist)"
             return "Result=Success"
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -820,13 +803,6 @@ class Prism_Cinema_Functions(object):
             )
             self.core.writeErrorLog(erStr)
             return "Execute Canceled: unknown error (view console for more information)"
-
-
-
-
-
-
-
 
     @err_catcher(name=__name__)
     def sm_render_undoRenderSettings(self, origin, rSettings):
