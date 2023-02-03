@@ -54,6 +54,18 @@ class Prism_Cinema_Functions(object):
         self.core = core
         self.plugin = plugin
         self.importHandlers = {}
+        
+        self.core.registerCallback(
+            "onProjectBrowserStartup", self.onProjectBrowserStartup, plugin=self.plugin
+        )
+        self.core.registerCallback(
+            "onStateManagerOpen", self.onStateManagerOpen, plugin=self.plugin
+        )
+        self.core.registerCallback(
+            "onProjectChanged", self.onProjectChanged, plugin=self.plugin
+        )
+        
+        
     @err_catcher(name=__name__)
     def startup(self, origin):
         if self.core.uiAvailable:
@@ -286,8 +298,12 @@ class Prism_Cinema_Functions(object):
     @err_catcher(name=__name__)
     def onProjectBrowserStartup(self, origin):
         # 	origin.sl_preview.mousePressEvent = origin.sliderDrag
-        origin.sl_preview.mousePressEvent = origin.sl_preview.origMousePressEvent
-
+        #origin.sl_preview.mousePressEvent = origin.sl_preview.origMousePressEvent
+        origin.mediaBrowser.mediaPlayer.sl_preview.mousePressEvent = (
+            origin.mediaBrowser.mediaPlayer.sl_preview.origMousePressEvent
+        )
+        origin.setStyleSheet("QScrollArea { border: 0px solid rgb(150,150,150); }")
+        
     @err_catcher(name=__name__)
     def openScene(self, origin, filepath, force=False):
         # load scenefile
@@ -1017,7 +1033,6 @@ class Prism_Cinema_Functions(object):
                 else:
                     obj = doc.GetSelection()
                 for i in obj:
-                    #status = xref.SetParameter(c4d.ID_CA_XREF_FILE, animated_alembic_file, c4d.DESCFLAGS_SET_PARAM_SET)
                     namespace = os.path.basename(impFileName).split(".")[0]
                     #namespace = i.GetName()
                     
@@ -1205,11 +1220,10 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def onStateManagerOpen(self, origin):
-        origin.b_description.setMinimumWidth(35 * self.core.uiScaleFactor)
-        origin.b_description.setMaximumWidth(35 * self.core.uiScaleFactor)
-        origin.b_preview.setMinimumWidth(35 * self.core.uiScaleFactor)
-        origin.b_preview.setMaximumWidth(35 * self.core.uiScaleFactor)
-        
+        origin.b_description.setMinimumWidth(30)
+        origin.b_description.setMaximumWidth(30)
+        origin.b_preview.setMinimumWidth(30)
+        origin.b_preview.setMaximumWidth(30)
         #self.outputFormats = [
         #    ".exr",
         #    ".png",
