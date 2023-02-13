@@ -299,9 +299,9 @@ class Prism_Cinema_Functions(object):
     def onProjectBrowserStartup(self, origin):
         # 	origin.sl_preview.mousePressEvent = origin.sliderDrag
         #origin.sl_preview.mousePressEvent = origin.sl_preview.origMousePressEvent
-        origin.mediaBrowser.mediaPlayer.sl_preview.mousePressEvent = (
-            origin.mediaBrowser.mediaPlayer.sl_preview.origMousePressEvent
-        )
+        #origin.mediaBrowser.mediaPlayer.sl_preview.mousePressEvent = (
+        #    origin.mediaBrowser.mediaPlayer.sl_preview.origMousePressEvent
+        #)
         origin.setStyleSheet("QScrollArea { border: 0px solid rgb(150,150,150); }")
         
     @err_catcher(name=__name__)
