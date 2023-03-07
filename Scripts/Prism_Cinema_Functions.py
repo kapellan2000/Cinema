@@ -245,8 +245,15 @@ class Prism_Cinema_Functions(object):
         if not os.path.exists(pt):
             os.makedirs(pt)
         doc.SetDocumentName(filepath.split("/")[-1])
-        
-        return documents.SaveDocument(doc, filepath, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
+
+
+        file_name, extension = os.path.splitext(os.path.basename(filepath))
+
+        shot_file_name = details['shot'] + "_" + file_name + extension
+
+        new_path = os.path.join(os.path.dirname(filepath), shot_file_name)
+         
+        return documents.SaveDocument(doc, new_path, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
         #return True
 
     @err_catcher(name=__name__)
