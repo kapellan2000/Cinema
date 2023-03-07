@@ -73,14 +73,11 @@ class Prism_Cinema_Functions(object):
             if qApp is None:
                 qApp = QApplication(sys.argv)
 
-
+            root = os.path.dirname(self.pluginPath).replace("\\", "/").split("Scripts")[0]
             with (
                 open(
                     os.path.join(
-                        self.core.prismRoot,
-                        "Plugins",
-                        "Apps",
-                        "Cinema",
+                        root,
                         "UserInterfaces",
                         "CinemaStyleSheet",
                         "Cinema.qss",
@@ -93,10 +90,7 @@ class Prism_Cinema_Functions(object):
             ssheet = ssheet.replace(
                 "qss:",
                 os.path.join(
-                    self.core.prismRoot,
-                    "Plugins",
-                    "Apps",
-                    "Cinema",
+                    root,
                     "UserInterfaces",
                     "CinemaStyleSheet",
                 ).replace("\\", "/")
@@ -770,6 +764,26 @@ class Prism_Cinema_Functions(object):
     @err_catcher(name=__name__)
     def sm_render_preSubmit(self, origin, rSettings):
         rSettings["outputName"] = rSettings["outputName"].replace("\\beauty","")
+
+    @err_catcher(name=__name__)
+    def sm_render_name(self):
+
+
+        # Get the current document
+        doc = c4d.documents.GetActiveDocument()
+
+        # Get the active render data
+        render_data = doc.GetActiveRenderData()
+
+        # Get the render settings from the render data
+        render_settings = render_data.GetDataInstance()
+        print(render_settings)
+        # Get the current render settings
+        current_render = render_settings.GetLong(c4d.RDATA_RENDERENGINE)
+
+        # Print the current render engine
+        print("Current render engine:", current_render)
+        return sm_render_name
 
     @err_catcher(name=__name__)
     def sm_render_startLocalRender(self, origin, outputName, rSettings):

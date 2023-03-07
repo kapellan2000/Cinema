@@ -9,7 +9,7 @@ prismRoot = os.getenv("PRISM_ROOT")
 if not prismRoot:
 	prismRoot = PRISMROOT
 	os.environ["PRISM_ROOT"] = prismRoot
-pt = prismRoot + "\\Plugins\\Apps\\Cinema\\Integration\\python3.7libs"
+pt = "C:\\ProgramData\\Prism2\\plugins\\Cinema\\Integration\\python3.7libs"
 if pt not in sys.path:
 	sys.path.append(pt)
 	
