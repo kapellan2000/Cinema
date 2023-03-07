@@ -4,4 +4,5 @@
 
 Support R26 or higher
 
+for install copy to c:\ProgramData\Prism2\plugins\Cinema\
 # prism-pipeline -https://prism-pipeline.com/
