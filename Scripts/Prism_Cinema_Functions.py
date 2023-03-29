@@ -248,7 +248,7 @@ class Prism_Cinema_Functions(object):
 
 
         file_name, extension = os.path.splitext(os.path.basename(filepath))
-
+        print(details)
         shot_file_name = details['shot'] + "_" + file_name + extension
 
         new_path = os.path.join(os.path.dirname(filepath), shot_file_name)
@@ -771,6 +771,11 @@ class Prism_Cinema_Functions(object):
     @err_catcher(name=__name__)
     def sm_render_preSubmit(self, origin, rSettings):
         rSettings["outputName"] = rSettings["outputName"].replace("\\beauty","")
+        if origin.chb_resOverride.isChecked():
+            doc = c4d.documents.GetActiveDocument()
+            rd = doc.GetActiveRenderData()
+            rd[c4d.RDATA_XRES] = str(origin.sp_resWidth.value())
+            rd[c4d.RDATA_YRES] = str(origin.sp_resHeight.value())
 
     @err_catcher(name=__name__)
     def sm_render_name(self):

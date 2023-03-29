@@ -12,7 +12,7 @@ def prismInit(prismArgs=[]):
         print(i)
     import PrismCore
     pcore = PrismCore.PrismCore(app="Cinema", prismArgs=prismArgs)
-    #return pcore
+    return pcore
 
 
 def createPrismCore():
