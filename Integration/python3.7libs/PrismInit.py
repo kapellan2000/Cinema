@@ -22,7 +22,7 @@ def createPrismCore():
     #py_side_p = prismRoot + "/PythonLibs/Python37/PySide"
     #py_side_p = prismRoot + "/Plugins/Apps/Cinema/Integration/python3.9libs/PySide"
     #sys.path.append(py_side_p)
-    py_side_p ="c:/ProgramData/Prism2/plugins/Cinema/Integration/python3.9libs/PySide"
+    py_side_p ="c:/ProgramData/Prism2/plugins/Cinema/Integration/python3.7libs/PySide"
     #py_side_p = prismRoot + "/PythonLibs/Python39/PySide"
     sys.path.append(py_side_p)
     global pcore
