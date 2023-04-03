@@ -109,9 +109,10 @@ class Prism_Cinema_Integration(object):
                 QMessageBox.warning(self.core.messageParent, "Prism Integration", "Unsupported version. Use Cinema R23 or higher")
                 return ""
 
-
+            
 
             #python lib fix path
+            
             try:
                 psPaths = []
                 if platform.system() == "Windows":
@@ -139,6 +140,7 @@ class Prism_Cinema_Integration(object):
                             break
             except:
                 print("1")
+            cmds = []
             for i in psPaths:
                 if version in i:
                     python_path = os.path.join(i, "resource\modules\python\libs")
@@ -148,13 +150,21 @@ class Prism_Cinema_Integration(object):
                             py_ver = dirs.split(".")[0]
                             python_fix_path =  os.path.join(python_path, dirs)
                             save_backup = os.path.join(python_fix_path, "python3.dll")
-                            bc_path = os.path.join(python_fix_path, "python3_backup.dll")
-                            if os.path.exists(save_backup) and not os.path.exists(bc_path):
-                                os.rename(save_backup, bc_path)
+                            #bc_path = os.path.join(python_fix_path, "python3_backup.dll")
+                            #if os.path.exists(save_backup) and not os.path.exists(bc_path):
+                            #    os.rename(save_backup, bc_path)
                             if os.path.exists(save_backup):
-                                os.remove(save_backup)
+                                #os.remove(save_backup)
+                                cmd = {
+                                        "type": "removeFile",
+                                        "args": [save_backup],
+                                        "validate": False,
+                                    }
+                                cmds.append(cmd)
                             python_lib = os.path.join(integrationBase, py_ver, "python3.dll")
-                            shutil.copy2(python_lib, python_fix_path)
+                            #shutil.copy2(python_lib, python_fix_path)
+                            cmd = {"type": "copyFile", "args": [python_lib, python_fix_path]}
+                            cmds.append(cmd)
 
 
             #python lib fix path end
@@ -162,35 +172,56 @@ class Prism_Cinema_Integration(object):
             initpath = os.path.join(installPath, "plugins/prism", "pythonrc.pyp")
 
             if os.path.exists(initpath):
-                os.remove(initpath)
+                #os.remove(initpath)
+                cmd = {
+                        "type": "removeFile",
+                        "args": [initpath],
+                        "validate": False,
+                    }
+                cmds.append(cmd)
 
             pl_path = os.path.join(installPath, "plugins", "prism", "icons")
 
             if not os.path.exists(pl_path):
-                os.makedirs(pl_path)
+                #os.makedirs(pl_path)
+                cmd = {"type": "createFolder", "args": [pl_path]}
+                cmds.append(cmd)
 
             l_path = os.path.join(installPath, "library", "layout")
 
             if not os.path.exists(l_path):
-                os.makedirs(l_path)
+                #os.makedirs(l_path)
+                cmd = {"type": "createFolder", "args": [l_path]}
+                cmds.append(cmd)               
 
             origLFile = os.path.join(integrationBase, "prism.l4d")
-            shutil.copy2(origLFile, l_path)
+            #shutil.copy2(origLFile, l_path)
+            cmd = {"type": "copyFile", "args": [origLFile, l_path]}
+            cmds.append(cmd)
 
             origInitFile = os.path.join(integrationBase, "pythonrc.pyp")
 
-            shutil.copy2(origInitFile, initpath)
+            #shutil.copy2(origInitFile, initpath)
+            cmd = {"type": "copyFile", "args": [origInitFile, initpath]}
+            cmds.append(cmd)
             addedFiles.append(initpath)
 
-            with open(initpath, "r") as init:
+            #with open(initpath, "r") as init:
+            #    initStr = init.read()
+
+            #with open(initpath, "w") as init:
+            #    initStr = initStr.replace(
+            #        "PRISMROOT", '"%s"' % self.core.prismRoot.replace("\\", "/")
+            #    )
+            #    init.write(initStr)
+            with open(origInitFile, "r") as init:
                 initStr = init.read()
 
-            with open(initpath, "w") as init:
-                initStr = initStr.replace(
-                    "PRISMROOT", '"%s"' % self.core.prismRoot.replace("\\", "/")
-                )
-                init.write(initStr)
+            initStr = initStr.replace("PRISMROOT", '"%s"' % self.core.prismRoot.replace("\\", "/"))
 
+
+            cmd = {"type": "writeToFile", "args": [initpath, initStr]}
+            cmds.append(cmd)
 
 
             icons = [
@@ -210,15 +241,18 @@ class Prism_Cinema_Integration(object):
                 if os.path.exists(tPath):
                     os.remove(tPath)
 
-                shutil.copy2(iconPath, tPath)
+                #shutil.copy2(iconPath, tPath)
+                cmd = {"type": "copyFile", "args": [iconPath, tPath]}
+                cmds.append(cmd)
                 addedFiles.append(tPath)
+            print("TTTTTTTUP")
+            result = self.core.runFileCommands(cmds)
+            print(result)
+            #if platform.system() in ["Linux", "Darwin"]:
+                #for i in addedFiles:
+                    #os.chmod(i, 0o777)
 
-
-            if platform.system() in ["Linux", "Darwin"]:
-                for i in addedFiles:
-                    os.chmod(i, 0o777)
-
-            return True
+            return result
 
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
