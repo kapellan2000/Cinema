@@ -33,7 +33,7 @@ import os
 
 class Prism_Cinema_Variables(object):
     def __init__(self, core, plugin):
-        self.version = "v2.0.0.beta16"
+        self.version = "v2.0.0.beta15"
         self.pluginName = "Cinema"
         self.pluginType = "App"
         self.appShortName = "C4D"

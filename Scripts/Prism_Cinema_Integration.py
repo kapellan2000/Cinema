@@ -245,9 +245,8 @@ class Prism_Cinema_Integration(object):
                 cmd = {"type": "copyFile", "args": [iconPath, tPath]}
                 cmds.append(cmd)
                 addedFiles.append(tPath)
-            print("TTTTTTTUP")
+ 
             result = self.core.runFileCommands(cmds)
-            print(result)
             #if platform.system() in ["Linux", "Darwin"]:
                 #for i in addedFiles:
                     #os.chmod(i, 0o777)
