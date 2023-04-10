@@ -249,8 +249,13 @@ class Prism_Cinema_Functions(object):
 
         file_name, extension = os.path.splitext(os.path.basename(filepath))
         print(details)
-        shot_file_name = details['shot'] + "_" + file_name + extension
-
+        if 'shot' in details:
+        
+            shot_file_name = details['shot'] + "_" + file_name + extension
+        elif 'asset' in details:
+            shot_file_name = details['asset'] + "_" + file_name + extension
+        else:
+            shot_file_name =  file_name + extension
         new_path = os.path.join(os.path.dirname(filepath), shot_file_name)
          
         return documents.SaveDocument(doc, new_path, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
