@@ -147,17 +147,16 @@ class Prism_Cinema_Integration(object):
                     for dirs in python_dir:
                         if "win64.framework" in dirs:
                             py_ver = dirs.split(".")[0]
-                            
                             python_fix_path =  os.path.join(python_path, dirs)
                             save_backup = os.path.join(python_fix_path, "python3.dll")
                             if os.path.exists(save_backup):
                                 os.remove(save_backup)
                             python_lib = os.path.join(integrationBase, py_ver, "python3.dll")
-                            python_lib = os.path.join(integrationBase, "python3.9libs", "python3.dll")
+                            #python_lib = os.path.join(integrationBase, "python3.9libs", "python3.dll")
                             shutil.copy2(python_lib, python_fix_path)
-                            if py_ver == "python310":
-                                python_lib = os.path.join(integrationBase, py_ver, "python310.dll")
-                                shutil.copy2(python_lib, python_fix_path)       
+                            #if py_ver == "python310":
+                                #python_lib = os.path.join(integrationBase, py_ver, "python3.dll")
+                                #shutil.copy2(python_lib, python_fix_path)       
 
 
 
