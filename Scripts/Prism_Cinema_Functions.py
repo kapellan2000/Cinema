@@ -779,8 +779,8 @@ class Prism_Cinema_Functions(object):
         if origin.chb_resOverride.isChecked():
             doc = c4d.documents.GetActiveDocument()
             rd = doc.GetActiveRenderData()
-            rd[c4d.RDATA_XRES] = str(origin.sp_resWidth.value())
-            rd[c4d.RDATA_YRES] = str(origin.sp_resHeight.value())
+            rd[c4d.RDATA_XRES] = float(origin.sp_resWidth.value())
+            rd[c4d.RDATA_YRES] = float(origin.sp_resHeight.value())
 
     @err_catcher(name=__name__)
     def sm_render_name(self):
