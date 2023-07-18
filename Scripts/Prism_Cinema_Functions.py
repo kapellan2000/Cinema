@@ -679,22 +679,33 @@ class Prism_Cinema_Functions(object):
                     break
                             
             if expType == ".c4d":
-                if origin.chb_wholeScene.isChecked():
+                
 
-                    foutputName = outputName.replace("\\","/")
-                    #myRendersettings = doc.GetActiveRenderData().GetClone()
-                    #theTempDoc.InsertRenderData(myRendersettings)
-                    #myRendersettings.SetBit(c4d.BIT_ACTIVERENDERDATA)
-                    #documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
-                    
-                    # save scenefile
-                    doc = documents.GetActiveDocument()
-                    #doc.SetDocumentPath(filepath.replace(filepath.split("/")[-1],""))
-                    #doc.SetDocumentName(filepath.split("/")[-1])
-                    
+                foutputName = outputName.replace("\\","/")
+
+                # save scenefile
+                doc = documents.GetActiveDocument()
+                if origin.chb_wholeScene.isChecked(): 
                     documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
-                    outputName = foutputName
+                else:
+                
 
+
+                    # Create a new document to hold the selected object(s)
+                    export_doc = c4d.documents.BaseDocument()
+                    export_doc.SetDocumentName("Exported Objects")
+                    for obj in objList:
+                        # Clone the selected object(s) and add it to the export document
+                        cloned_obj = obj.GetClone(c4d.COPYFLAGS_0)
+                        export_doc.InsertObject(cloned_obj)
+                        
+                    # Save the export document to the specified file path
+                    c4d.documents.SaveDocument(export_doc, foutputName, c4d.SAVEDOCUMENTFLAGS_0, 1001026)
+                    # Delete the export document
+                    c4d.documents.KillDocument(export_doc)  
+                        
+                outputName = foutputName
+                
 
 
 
@@ -716,7 +727,7 @@ class Prism_Cinema_Functions(object):
     def sm_export_typeChanged(self, origin, idx):
         if idx == ".c4d":
             origin.chb_wholeScene.setChecked(True)
-            origin.chb_wholeScene.setDisabled(True)
+            origin.chb_wholeScene.setDisabled(False)
         else:
             origin.chb_wholeScene.setChecked(False)
             origin.chb_wholeScene.setDisabled(False)
