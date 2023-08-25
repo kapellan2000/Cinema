@@ -54,6 +54,18 @@ class Prism_Cinema_Functions(object):
         self.core = core
         self.plugin = plugin
         self.importHandlers = {}
+        
+        self.core.registerCallback(
+            "onProjectBrowserStartup", self.onProjectBrowserStartup, plugin=self.plugin
+        )
+        self.core.registerCallback(
+            "onStateManagerOpen", self.onStateManagerOpen, plugin=self.plugin
+        )
+        self.core.registerCallback(
+            "onProjectChanged", self.onProjectChanged, plugin=self.plugin
+        )
+        
+        
     @err_catcher(name=__name__)
     def startup(self, origin):
         if self.core.uiAvailable:
@@ -61,14 +73,11 @@ class Prism_Cinema_Functions(object):
             if qApp is None:
                 qApp = QApplication(sys.argv)
 
-
+            root = os.path.dirname(self.pluginPath).replace("\\", "/").split("Scripts")[0]
             with (
                 open(
                     os.path.join(
-                        self.core.prismRoot,
-                        "Plugins",
-                        "Apps",
-                        "Cinema",
+                        root,
                         "UserInterfaces",
                         "CinemaStyleSheet",
                         "Cinema.qss",
@@ -81,10 +90,7 @@ class Prism_Cinema_Functions(object):
             ssheet = ssheet.replace(
                 "qss:",
                 os.path.join(
-                    self.core.prismRoot,
-                    "Plugins",
-                    "Apps",
-                    "Cinema",
+                    root,
                     "UserInterfaces",
                     "CinemaStyleSheet",
                 ).replace("\\", "/")
@@ -239,8 +245,20 @@ class Prism_Cinema_Functions(object):
         if not os.path.exists(pt):
             os.makedirs(pt)
         doc.SetDocumentName(filepath.split("/")[-1])
+
+
+        file_name, extension = os.path.splitext(os.path.basename(filepath))
+        print(details)
+        if 'shot' in details:
         
-        return documents.SaveDocument(doc, filepath, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
+            shot_file_name = details['shot'] + "_" + file_name + extension
+        elif 'asset' in details:
+            shot_file_name = details['asset'] + "_" + file_name + extension
+        else:
+            shot_file_name =  file_name + extension
+        new_path = os.path.join(os.path.dirname(filepath), shot_file_name)
+         
+        return documents.SaveDocument(doc, new_path, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
         #return True
 
     @err_catcher(name=__name__)
@@ -286,8 +304,12 @@ class Prism_Cinema_Functions(object):
     @err_catcher(name=__name__)
     def onProjectBrowserStartup(self, origin):
         # 	origin.sl_preview.mousePressEvent = origin.sliderDrag
-        origin.sl_preview.mousePressEvent = origin.sl_preview.origMousePressEvent
-
+        #origin.sl_preview.mousePressEvent = origin.sl_preview.origMousePressEvent
+        #origin.mediaBrowser.mediaPlayer.sl_preview.mousePressEvent = (
+        #    origin.mediaBrowser.mediaPlayer.sl_preview.origMousePressEvent
+        #)
+        origin.setStyleSheet("QScrollArea { border: 0px solid rgb(150,150,150); }")
+        
     @err_catcher(name=__name__)
     def openScene(self, origin, filepath, force=False):
         # load scenefile
@@ -521,7 +543,7 @@ class Prism_Cinema_Functions(object):
             objList.append(doc.SearchObject(x))
 
 
-        myObject = doc.SearchObject("Cube")#select
+        #myObject = doc.SearchObject("Cube")#select
 
         if origin.chb_wholeScene.isChecked():
             objList, obj = self.get_all_objects(doc.GetFirstObject(), lambda x: x, [])
@@ -541,7 +563,7 @@ class Prism_Cinema_Functions(object):
             for obj in objList:
                 # check type
                 if isinstance(obj, c4d.BaseObject) or origin.chb_wholeScene.isChecked():
-                    if expType == ".obj" or expType == ".fbx":
+                    if expType == ".obj":
                         for i in range(startFrame, endFrame + 1):
                             if origin.chb_wholeScene.isChecked():
                                 obj = ""
@@ -558,10 +580,6 @@ class Prism_Cinema_Functions(object):
                             doc.SetTime(time)
                             
                             foutputName = outputName.replace("####", format(i, "04")).replace("\\","/")
-                            # steal active rendersettings (incl. children) & set them active in saved doc
-
-                            # save temp doc in folder using the original project-filename & objectname
-                            #path = str(setupFolder + obj.GetName() + str(fileFormatEnding))
 
                             documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
                             # some list-stuff
@@ -574,10 +592,58 @@ class Prism_Cinema_Functions(object):
                             # kill temp doc
                             documents.KillDocument(theTempDoc)
                         outputName = foutputName
+                    if expType == ".fbx":
+                        foutputName = outputName.replace("\\","/")
+                        backup_options = {}
+                        export_options = {c4d.FBXEXPORT_LIGHTS: 1,
+                                          c4d.FBXEXPORT_CAMERAS: 0,
+                                          c4d.FBXEXPORT_SPLINES: 1,
+                                          # Geometry and Materials
+                                          c4d.FBXEXPORT_SAVE_NORMALS: 1,
+                                          #c4d.FBXEXPORT_TEXTURES: 1,
+                                          c4d.FBXEXPORT_EMBED_TEXTURES: 1,
+                                          c4d.FBXEXPORT_FBX_VERSION: c4d.FBX_EXPORTVERSION_NATIVE,
+                                          # cancel all these one
+                                          c4d.FBXEXPORT_PLA_TO_VERTEXCACHE: 0,
+                                          c4d.FBXEXPORT_SAVE_VERTEX_MAPS_AS_COLORS: 0,
+                                          c4d.FBXEXPORT_TRIANGULATE: 0,
+                                          c4d.FBXEXPORT_SDS_SUBDIVISION: 1,
+                                          c4d.FBXEXPORT_ASCII: 0}
+                        export_options[c4d.FBXEXPORT_TRACKS] = 1
+                        if origin.chb_wholeScene.isChecked():
+                            export_options[c4d.FBXEXPORT_SELECTION_ONLY] = 0
+                        else:
+                            export_options[c4d.FBXEXPORT_SELECTION_ONLY] = 1
+                        if startFrame == endFrame:
+                            export_options[c4d.FBXEXPORT_BAKE_ALL_FRAMES] = 0
+                        else:
+                            export_options[c4d.FBXEXPORT_BAKE_ALL_FRAMES] = 1
+                        options = plugins.FindPlugin(cmdNr, c4d.PLUGINTYPE_SCENESAVER)
+                        
+                        for key in export_options:
+                            if options[key] != export_options[key]:
+                                backup_options[key] = options[key]
+                            options[key] = export_options[key]
+                            
+                        backup_start = doc.GetMinTime()
+                        backup_end = doc.GetMaxTime()
+                        self.core.setFrameRange(startFrame, endFrame)
+                        
+  
+                        # FBX Export
+                        documents.SaveDocument(doc, foutputName,
+                                               c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
+                
+                        # restore options
+                        for key in backup_options:
+                            if backup_options[key]:
+                                options[key] = backup_options[key]
+                        doc.SetMinTime(backup_start)
+                        doc.SetMaxTime(backup_end)  
+            
                     if expType == ".abc":
-                        print("D")
                         # Get Alembic export plugin, 1028082 is its ID
-                        plug = plugins.FindPlugin(1028082, c4d.PLUGINTYPE_SCENESAVER)
+                        plug = plugins.FindPlugin(cmdNr, c4d.PLUGINTYPE_SCENESAVER)
 
                         foutputName = outputName.replace("\\","/")
 
@@ -604,7 +670,7 @@ class Prism_Cinema_Functions(object):
                             abcExport[c4d.ABCEXPORT_PARTICLE_GEOMETRY] = True
 
                             # Finally export the document
-                            if documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, 1028082):
+                            if documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr):
                                 print(foutputName)
                             else:
                                 print ("Export failed!")
@@ -613,29 +679,40 @@ class Prism_Cinema_Functions(object):
                     break
                             
             if expType == ".c4d":
-                if origin.chb_wholeScene.isChecked():
+                
 
-                    foutputName = outputName.replace("\\","/")
-                    #myRendersettings = doc.GetActiveRenderData().GetClone()
-                    #theTempDoc.InsertRenderData(myRendersettings)
-                    #myRendersettings.SetBit(c4d.BIT_ACTIVERENDERDATA)
-                    #documents.SaveDocument(theTempDoc, foutputName, c4d.SAVEDOCUMENTFLAGS_DONTADDTORECENTLIST, cmdNr)
-                    
-                    # save scenefile
-                    doc = documents.GetActiveDocument()
-                    #doc.SetDocumentPath(filepath.replace(filepath.split("/")[-1],""))
-                    #doc.SetDocumentName(filepath.split("/")[-1])
-                    
+                foutputName = outputName.replace("\\","/")
+
+                # save scenefile
+                doc = documents.GetActiveDocument()
+                if origin.chb_wholeScene.isChecked(): 
                     documents.SaveDocument(doc, foutputName, c4d.SAVEDOCUMENTFLAGS_DIALOGSALLOWED, c4d.FORMAT_C4DEXPORT)
-                    outputName = foutputName
+                else:
+                
 
+
+                    # Create a new document to hold the selected object(s)
+                    export_doc = c4d.documents.BaseDocument()
+                    export_doc.SetDocumentName("Exported Objects")
+                    for obj in objList:
+                        # Clone the selected object(s) and add it to the export document
+                        cloned_obj = obj.GetClone(c4d.COPYFLAGS_0)
+                        export_doc.InsertObject(cloned_obj)
+                        
+                    # Save the export document to the specified file path
+                    c4d.documents.SaveDocument(export_doc, foutputName, c4d.SAVEDOCUMENTFLAGS_0, 1001026)
+                    # Delete the export document
+                    c4d.documents.KillDocument(export_doc)  
+                        
+                outputName = foutputName
+                
 
 
 
 
         return outputName
-
-
+    #def sm_createStatePressed(self, origin, stateType):
+    #    pass
     @err_catcher(name=__name__)
     def sm_export_preDelete(self, origin):
         pass
@@ -650,7 +727,7 @@ class Prism_Cinema_Functions(object):
     def sm_export_typeChanged(self, origin, idx):
         if idx == ".c4d":
             origin.chb_wholeScene.setChecked(True)
-            origin.chb_wholeScene.setDisabled(True)
+            origin.chb_wholeScene.setDisabled(False)
         else:
             origin.chb_wholeScene.setChecked(False)
             origin.chb_wholeScene.setDisabled(False)
@@ -709,7 +786,32 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def sm_render_preSubmit(self, origin, rSettings):
-        pass
+        rSettings["outputName"] = rSettings["outputName"].replace("\\beauty","")
+        if origin.chb_resOverride.isChecked():
+            doc = c4d.documents.GetActiveDocument()
+            rd = doc.GetActiveRenderData()
+            rd[c4d.RDATA_XRES] = float(origin.sp_resWidth.value())
+            rd[c4d.RDATA_YRES] = float(origin.sp_resHeight.value())
+
+    @err_catcher(name=__name__)
+    def sm_render_name(self):
+
+
+        # Get the current document
+        doc = c4d.documents.GetActiveDocument()
+
+        # Get the active render data
+        render_data = doc.GetActiveRenderData()
+
+        # Get the render settings from the render data
+        render_settings = render_data.GetDataInstance()
+        print(render_settings)
+        # Get the current render settings
+        current_render = render_settings.GetLong(c4d.RDATA_RENDERENGINE)
+
+        # Print the current render engine
+        print("Current render engine:", current_render)
+        return sm_render_name
 
     @err_catcher(name=__name__)
     def sm_render_startLocalRender(self, origin, outputName, rSettings):
@@ -722,17 +824,17 @@ class Prism_Cinema_Functions(object):
 
         try:
             rdata = doc.GetActiveRenderData()
-            rdata[c4d.RDATA_PATH] = rSettings["outputName"]
+            rdata[c4d.RDATA_PATH] = rSettings["outputName"].replace("\\beauty","")
             if origin.gb_passes.isChecked():
                 try:
                     octane = rdata.GetFirstVideoPost()
                     octane[c4d.SET_PASSES_ENABLED] = True
-                    octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"]
+                    octane[c4d.SET_PASSES_SAVEPATH] = rSettings["outputName"].replace("\\beauty","")
                     octane[c4d.RDATA_PROJECTFILE] = False
                 except:
                     pass
                 rdata()[c4d.RDATA_MULTIPASS_SAVEIMAGE] = True
-                rdata[c4d.RDATA_MULTIPASS_FILENAME] = rSettings["outputName"]
+                rdata[c4d.RDATA_MULTIPASS_FILENAME] = rSettings["outputName"].replace("\\beauty","")
             else:
                 try:
                     octane = rdata.GetFirstVideoPost()
@@ -749,22 +851,6 @@ class Prism_Cinema_Functions(object):
             rdata[c4d.RDATA_FRAMESTEP] = 1
             c4d.CallCommand(12099)
 
-
-
-            #tmpPath = os.path.join(os.path.dirname(rSettings["outputName"]), "tmp")
-            #if os.path.exists(tmpPath):
-            #    try:
-            #        shutil.rmtree(tmpPath)
-            #    except:
-            #        pass
-
-            #if (
-            #    os.path.exists(os.path.dirname(outputName))
-            #    and len(os.listdir(os.path.dirname(outputName))) > 0
-            #):
-            #    return "Result=Success"
-            #else:
-            #    return "unknown error (files do not exist)"
             return "Result=Success"
         except Exception as e:
             exc_type, exc_obj, exc_tb = sys.exc_info()
@@ -775,13 +861,6 @@ class Prism_Cinema_Functions(object):
             )
             self.core.writeErrorLog(erStr)
             return "Execute Canceled: unknown error (view console for more information)"
-
-
-
-
-
-
-
 
     @err_catcher(name=__name__)
     def sm_render_undoRenderSettings(self, origin, rSettings):
@@ -996,7 +1075,6 @@ class Prism_Cinema_Functions(object):
                 else:
                     obj = doc.GetSelection()
                 for i in obj:
-                    #status = xref.SetParameter(c4d.ID_CA_XREF_FILE, animated_alembic_file, c4d.DESCFLAGS_SET_PARAM_SET)
                     namespace = os.path.basename(impFileName).split(".")[0]
                     #namespace = i.GetName()
                     
@@ -1184,11 +1262,10 @@ class Prism_Cinema_Functions(object):
 
     @err_catcher(name=__name__)
     def onStateManagerOpen(self, origin):
-        origin.b_description.setMinimumWidth(35 * self.core.uiScaleFactor)
-        origin.b_description.setMaximumWidth(35 * self.core.uiScaleFactor)
-        origin.b_preview.setMinimumWidth(35 * self.core.uiScaleFactor)
-        origin.b_preview.setMaximumWidth(35 * self.core.uiScaleFactor)
-        
+        origin.b_description.setMinimumWidth(30)
+        origin.b_description.setMaximumWidth(30)
+        origin.b_preview.setMinimumWidth(30)
+        origin.b_preview.setMaximumWidth(30)
         #self.outputFormats = [
         #    ".exr",
         #    ".png",
