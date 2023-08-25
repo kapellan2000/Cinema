@@ -44,7 +44,7 @@ option 2 (git)
 
 ## Support
 
-You can contact our team at [support@fatfi.sh](mailto:a.v.slobodyanyuk@gmail.com).
+You can contact our team at [a.v.slobodyanyuk@gmail.com](mailto:a.v.slobodyanyuk@gmail.com).
 
 ## Licence
 
