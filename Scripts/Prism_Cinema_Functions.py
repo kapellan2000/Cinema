@@ -34,13 +34,10 @@
 import os
 import sys
 
-try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
-except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+
+from qtpy.QtCore import *
+from qtpy.QtGui import *
+from qtpy.QtWidgets import *
 
 from PrismUtils.Decorators import err_catcher as err_catcher
 
@@ -53,6 +50,7 @@ class Prism_Cinema_Functions(object):
     def __init__(self, core, plugin):
         self.core = core
         self.plugin = plugin
+        
         self.importHandlers = {}
         
         self.core.registerCallback(
@@ -68,8 +66,12 @@ class Prism_Cinema_Functions(object):
         
     @err_catcher(name=__name__)
     def startup(self, origin):
+        
         if self.core.uiAvailable:
+            
+                
             qApp = QApplication.instance()
+
             if qApp is None:
                 qApp = QApplication(sys.argv)
 
@@ -97,9 +99,6 @@ class Prism_Cinema_Functions(object):
                 + "/",
             )
 
-
-
-
             qApp.setStyleSheet(ssheet)
             appIcon = QIcon(
                 os.path.join(
@@ -113,25 +112,6 @@ class Prism_Cinema_Functions(object):
 
         origin.timer.stop()
 
-        # 	for obj in QApplication.topLevelWidgets():
-        # 		if obj.objectName() == 'PluginEmptyWindow':
-        # 			QtParent = obj
-        # 			break
-        # 	else:
-        # 		return False
-        #origin.timer.stop()
-        #else:
-           #return False
-        #origin.messageParent = QWidget()
-        # 	origin.messageParent.setParent(QtParent, Qt.Window)
-        #if self.core.useOnTop:
-        #    origin.messageParent.setWindowFlags(
-        #        origin.messageParent.windowFlags() ^ Qt.WindowStaysOnTopHint
-        #    )
-
-        #origin.startasThread()
-        
-        
     @err_catcher(name=__name__)
     def autosaveEnabled(self, origin):
         # get autosave enabled
