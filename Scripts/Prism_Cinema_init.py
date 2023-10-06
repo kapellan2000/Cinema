@@ -46,6 +46,7 @@ class Prism_Plugin_Cinema(
     Prism_Cinema_Integration,
 ):
     def __init__(self, core):
+
         Prism_Cinema_Variables.__init__(self, core, self)
         Prism_Cinema_externalAccess_Functions.__init__(self, core, self)
         Prism_Cinema_Functions.__init__(self, core, self)

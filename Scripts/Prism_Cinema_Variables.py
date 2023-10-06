@@ -29,11 +29,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with Prism.  If not, see <https://www.gnu.org/licenses/>.
+
+
 import os
+
 
 class Prism_Cinema_Variables(object):
     def __init__(self, core, plugin):
-        self.version = "v2.0.0.beta17.8"
+        self.version = "v2.0.0.beta17.11"
         self.pluginName = "Cinema"
         self.pluginType = "App"
         self.appShortName = "C4D"

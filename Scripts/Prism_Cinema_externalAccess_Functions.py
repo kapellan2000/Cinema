@@ -34,13 +34,17 @@
 import os
 import platform
 
-try:
-    from PySide2.QtCore import *
-    from PySide2.QtGui import *
-    from PySide2.QtWidgets import *
-except:
-    from PySide.QtCore import *
-    from PySide.QtGui import *
+#try:
+#    from PySide2.QtCore import *
+#    from PySide2.QtGui import *
+#    from PySide2.QtWidgets import *
+#except:
+#    from PySide.QtCore import *
+#    from PySide.QtGui import *
+    
+from qtpy.QtCore import *
+from qtpy.QtGui import *
+from qtpy.QtWidgets import *
 
 from PrismUtils.Decorators import err_catcher_plugin as err_catcher
 
