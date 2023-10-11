@@ -1,21 +1,36 @@
 import os
 import sys
+
+
 def prismInit(prismArgs=[]):
-    root = os.getenv("PRISM_ROOT", "")
-    scriptPath = os.path.join(root, "Scripts")
-    if scriptPath not in sys.path:
-        sys.path.append(scriptPath)
+    if "PRISM_ROOT" in os.environ:
+        prismRoot = os.environ["PRISM_ROOT"]
+        if not prismRoot:
+            return
+    else:
+        prismRoot = PRISMROOT
+
+
+    sys.path.insert(0,"C:/ProgramData/Prism2/plugins/Cinema/Integration/python3.7libs/PySide")
+    from PySide2 import QtWidgets
+    qapp = QtWidgets.QApplication.instance()
+    
+    
+    if not qapp:
+        QtWidgets.QApplication(sys.argv)
+
+    scriptDir = os.path.join(prismRoot, "Scripts")
+
+    if scriptDir not in sys.path:
+        sys.path.append(scriptDir)
+
     import PrismCore
+
+    global pcore
     pcore = PrismCore.PrismCore(app="Cinema", prismArgs=prismArgs)
     return pcore
 
-def createPrismCore():
-    prismRoot = os.getenv("PRISM_ROOT")
-    py_side_p = os.path.join(prismRoot, "PythonLibs","Python3","PySide")
-    sys.path.append(py_side_p)
-    global pcore
 
-    pcore = prismInit()
 
     
 

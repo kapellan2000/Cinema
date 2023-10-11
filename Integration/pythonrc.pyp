@@ -17,7 +17,7 @@ if pt not in sys.path:
 # >>>PrismStart
 try:
     import PrismInit
-    PrismInit.createPrismCore()
+    PrismInit.prismInit()
 except Exception as e:
     print (str(e))
 # <<<PrismEnd
@@ -43,7 +43,7 @@ class callbackPlugin(c4d.plugins.CommandData):
 		PrismInit.pcore.saveWithComment()
 		
 	def _browser(self):
-		PrismInit.createPrismCore()
+		PrismInit.prismInit()
 		PrismInit.pcore.projectBrowser()
 		
 	def _state(self):

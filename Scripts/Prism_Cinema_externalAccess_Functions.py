@@ -55,12 +55,20 @@ class Prism_Cinema_externalAccess_Functions(object):
         self.plugin = plugin
         self.core.registerCallback("getPresetScenes", self.getPresetScenes, plugin=self.plugin)
     @err_catcher(name=__name__)
-    def getAutobackPath(self, origin, tab):
-        autobackpath = ""
-        if platform.system() == "Windows":
-            autobackpath = os.path.join(
-                os.getenv("USERPROFILE"), "Documents", "Cinema"
-            )
+    def getAutobackPath(self, origin):
+        #allOri  = ['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'addEntityAction', 'backupScenefile', 'connectEntityDlg', 'copySceneFile', 'core', 'createAsset', 'createAssetFolder', 'createCategory', 'createDefaultCat', 'createDepartment', 'createEntity', 'createPresetScene', 'createSceneFromPreset', 'createShot', 'createVersionFromAutoBackup', 'createVersionFromAutoBackupDlg', 'createVersionFromCurrentScene', 'deleteShot', 'entityActions', 'entityDlg', 'entityFolders', 'filterAssets', 'filterOmittedAssets', 'getAsset', 'getAssetActions', 'getAssetDescription', 'getAssetFoldersFromPath', 'getAssetNameFromPath', 'getAssetPathFromAssetName', 'getAssetPaths', 'getAssetRelPathFromPath', 'getAssetSubFolders', 'getAssets', 'getAutobackPath', 'getCategories', 'getCleanEntity', 'getConnectedEntities', 'getCurrentDependencies', 'getDefaultTasksForDepartment', 'getDependencies', 'getEmptyAssetFolders', 'getEntityName', 'getEntityPreview', 'getEntityPreviewPath', 'getHighestVersion', 'getMetaData', 'getPresetScenes', 'getPresetScenesFromFolder', 'getScenePreviewPath', 'getScenefileData', 'getScenefileInfoPath', 'getScenefiles', 'getSequences', 'getShotActions', 'getShotName', 'getShotRange', 'getShots', 'getShotsFromSequence', 'getSteps', 'getTaskData', 'getTaskDataPath', 'getTaskNames', 'getTypeFromPath', 'getUniqueEntities', 'indexOf', 'ingestScenefiles', 'isAssetOmitted', 'isAssetPathOmitted', 'isEntityOmitted', 'isShotOmitted', 'isValidAssetName', 'isValidScenefilename', 'omitEntity', 'omittedEntities', 'orderDepartments', 'orderTasks', 'refreshOmittedEntities', 'removeEntityAction', 'renameSequence', 'renameShot', 'setAssetDescription', 'setComment', 'setConnectedEntities', 'setDescription', 'setEntityPreview', 'setMetaData', 'setScenePreview', 'setScenefileInfo', 'setShotRange', 'setTaskData']
+        #for i in allOri:
+        #    try:
+        #        print(i)
+        #        print(getattr(origin, i)())
+        #        
+        #    except Exception as e:
+        #        pass
+        #print(origin.getShots()[1][0]['path'].split("03_Production")[0])
+
+        
+        autobackpath = origin.getShots()[1][0]['path'].split("03_Production")[0]
+
 
         fileStr = "Cinema Scene File ("
         for i in self.sceneFormats:

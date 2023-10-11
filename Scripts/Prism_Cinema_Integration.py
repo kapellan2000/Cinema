@@ -143,15 +143,19 @@ class Prism_Cinema_Integration(object):
                         except:
                             break
             except:
+            
                 print("1")
             cmds = []
             for i in psPaths:
                 if version in i:
                     python_path = os.path.join(i, "resource\modules\python\libs")
                     python_dir = os.listdir(python_path)
+                    for filename in python_dir:
+                        if filename.startswith('python') and filename[6:].isdigit():
+                            py_ver = filename
                     for dirs in python_dir:
-                        if "win64.framework" in dirs:
-                            py_ver = dirs.split(".")[0]
+                        if "win64" in dirs:
+                            #py_ver = dirs.split(".")[0]
                             python_fix_path =  os.path.join(python_path, dirs)
                             save_backup = os.path.join(python_fix_path, "python3.dll")
                             #bc_path = os.path.join(python_fix_path, "python3_backup.dll")

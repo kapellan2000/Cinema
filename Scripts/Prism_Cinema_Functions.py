@@ -228,7 +228,6 @@ class Prism_Cinema_Functions(object):
 
 
         file_name, extension = os.path.splitext(os.path.basename(filepath))
-        print(details)
         if 'shot' in details:
         
             shot_file_name = details['shot'] + "_" + file_name + extension

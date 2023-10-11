@@ -53,6 +53,7 @@ class Prism_Cinema_Variables(object):
         self.pluginDirectory = os.path.abspath(
             os.path.dirname(os.path.dirname(__file__))
         )
+        print(self.pluginDirectory)
         self.appIcon = os.path.join(
             self.pluginDirectory, "UserInterfaces", "cinema.ico"
         )
