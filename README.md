@@ -3,7 +3,9 @@
 > Cinema 4D plugin for Prism allow you to sync and publish your shots and assets with [Prism](https://prism-pipeline.com/)
 
 ## **Note: 
-This plugin has been tested on Windows 10 with Cinema R2023 and Prism v2.0.beta17.8
+This plugin has been tested on Windows 10 with Cinema R2023 and Prism v2.0.beta17.13
+
+Added test support for Cinema R2024 (MediaExtension plugin does not support).
 
 Support R26 or higher
 octane and redshift supported
@@ -41,6 +43,10 @@ option 2 (git)
 1. Pull the lastest changes
     1. `git pull`
 1. (Re)start Prism or use the `Reload all plugins` button in Prism's settings > `Plugins` tab
+
+## Important
+Currently, the plugin cannot work with V-Ray.
+
 
 ## Support
 

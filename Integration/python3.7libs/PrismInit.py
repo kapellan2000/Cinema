@@ -11,8 +11,15 @@ def prismInit(prismArgs=[]):
         prismRoot = PRISMROOT
 
 
+    #os.environ['QT_API'] = 'pyside6'
+    #sys.path.insert(0,"C:/ProgramData/Prism2/plugins/Cinema/Integration/python3.7libs/PySide6")
+    #sys.path.insert(0,"c:/Program Files/Prism2/PythonLibs/CrossPlatform")
+    #from qtpy import QtWidgets
     sys.path.insert(0,"C:/ProgramData/Prism2/plugins/Cinema/Integration/python3.7libs/PySide")
     from PySide2 import QtWidgets
+
+    
+
     qapp = QtWidgets.QApplication.instance()
     
     
