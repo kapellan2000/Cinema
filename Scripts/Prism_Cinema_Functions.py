@@ -1200,7 +1200,6 @@ class Prism_Cinema_Functions(object):
     def sm_playblast_createPlayblast(self, origin, jobFrames, outputName):
         doc = documents.GetActiveDocument()
         rd = doc.GetActiveRenderData()
-        print(">>>>", outputName)
         outputName = outputName.replace("####.","")
         rd[c4d.RDATA_SAVEIMAGE] = True
         rd[c4d.RDATA_RENDERENGINE] = c4d.RDATA_RENDERENGINE_PREVIEWHARDWARE
