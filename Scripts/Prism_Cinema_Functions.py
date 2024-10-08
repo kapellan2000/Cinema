@@ -874,7 +874,8 @@ class Prism_Cinema_Functions(object):
         return warnings
 
     @err_catcher(name=__name__)
-    def sm_render_fixOutputPath(self, origin, outputName, singleFrame=False):
+    def sm_render_fixOutputPath(self, origin, outputName, singleFrame=False, state=None):
+
         return outputName
 
     @err_catcher(name=__name__)
